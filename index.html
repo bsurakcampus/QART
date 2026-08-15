@@ -100,12 +100,12 @@ select.fsel{border:1.5px solid var(--line);border-radius:9px;padding:8px 10px;fo
     <h1 id="hTitle">Learning &amp; Teaching Symposium</h1>
     <div class="sub" id="hSub">Five working sessions. No long speeches, no lost ideas: you sit at a computer, we pose the questions, and every comment, idea and vote is typed, documented and analysed. What we write together becomes the campus plan.</div>
     <div class="agenda" id="agenda"><div style="color:#9FB3CB;font-size:13px">Loading agenda…</div></div>
-    <div class="note">Don't talk much. Type everything. Every voice counts equally here, and every word is kept.</div>
+    <div class="note" id="hFooter">Don't talk much. Type everything. Every voice counts equally here, and every word is kept.</div>
   </div>
   <div class="homeR">
     <div id="loginStep1">
       <h2>Join the session</h2>
-      <div class="hint">Use your <b id="domainTxt">bathspa.ae</b> email. A one-time code will be sent to you. Your first login each day is your attendance.</div>
+      <div class="hint" id="loginHint">Use your <b id="domainTxt">bathspa.ae</b> email. A one-time code will be sent to you. Your first login each day is your attendance.</div>
       <label>Email address</label>
       <input type="email" id="lEmail" placeholder="you@bathspa.ae">
       <button class="btn" onclick="requestOtp()">Send me the code</button>
@@ -167,8 +167,8 @@ select.fsel{border:1.5px solid var(--line);border-radius:9px;padding:8px 10px;fo
 <script>
 /* ================= CONFIG ================= */
 const CONFIG = {
-  EXEC_URL: "https://script.google.com/macros/s/AKfycbz90CVMuTRyateHAN_fuze-6kHr2GCNRqx0XDuFSBX_ItvMXv5bKUYC6QD5JFRAU87e/exec",
-  LOGO_URL: "https://drive.google.com/file/d/1isNkX6RAzMkTYkLK2ltDc_jlw1YO_Lx1/view?usp=drive_link"   // paste a public logo image URL when ready; text mark shows until then
+  EXEC_URL: "PASTE_YOUR_APPS_SCRIPT_EXEC_URL_HERE",
+  LOGO_URL: ""   // paste a public logo image URL when ready; text mark shows until then
 };
 const W = new URLSearchParams(location.search).get("w") || "aug-2026";
 
@@ -201,8 +201,11 @@ async function loadHome(){
     const lg = imgUrl(INFO.logoUrl || CONFIG.LOGO_URL);
     if(lg) el("logoBox").innerHTML = '<span class="chip"><img src="'+lg+'" alt="Bath Spa University RAK Campus"></span>';
     el("hTitle").textContent = INFO.title;
-    el("hEyebrow").textContent = "BSU RAK CAMPUS · " + (INFO.edition||"").toUpperCase();
-    el("domainTxt").textContent = INFO.domain;
+    el("hEyebrow").textContent = ((INFO.eyebrow||"BSU RAK CAMPUS") + " · " + (INFO.edition||"")).toUpperCase();
+    if(INFO.intro) el("hSub").textContent = INFO.intro;
+    if(INFO.footer) el("hFooter").textContent = INFO.footer;
+    if(INFO.loginText) el("loginHint").innerHTML = esc(INFO.loginText).replace("{domain}", "<b>"+esc(INFO.domain)+"</b>");
+    if(el("domainTxt")) el("domainTxt").textContent = INFO.domain;
     el("roleNote").textContent = INFO.roleWord + "? Log in with the " + INFO.roleWord.toLowerCase() + " email; the console opens automatically.";
     el("agenda").innerHTML = INFO.sessions.map(s=>`<div class="row"><span class="n">${esc(s["Session No"])}</span><span class="d">${esc(s.Day)} · ${esc(s.Date)} · ${esc(s.Start)}–${esc(s.End)}</span><span class="t">${esc(s.Theme)}</span></div>`).join("");
     if(ME) enter();
