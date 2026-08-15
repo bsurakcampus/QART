@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learning &amp; Teaching Symposium · BSU RAK Campus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0E2A47;--ink2:#33506F;--paper:#F6F7F9;--card:#fff;--brass:#B08A2E;--brassbg:#F3EAD3;
+--line:#DDE3EA;--green:#2E7D4F;--red:#B3392F;--r:14px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(--ink);font-size:15px;line-height:1.5}
+button{font:inherit;cursor:pointer}
+input,textarea,select{font:inherit}
+.hide{display:none!important}
+
+/* ---------- HOME ---------- */
+#home{min-height:100vh;display:flex;flex-wrap:wrap}
+.homeL{flex:3 1 560px;background:var(--ink);color:#fff;padding:48px 56px;display:flex;flex-direction:column}
+.logo{height:52px;margin-bottom:28px;display:flex;align-items:center;gap:14px}
+.logo .chip{background:#fff;border-radius:12px;padding:8px 14px;display:inline-flex;align-items:center}
+.logo img{height:56px;display:block}
+.logo .fallback{font-family:'Fraunces',serif;font-weight:650;font-size:22px;color:#fff;border:2px solid var(--brass);padding:8px 16px;border-radius:8px}
+.homeL .eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#9FB3CB;font-weight:600}
+.homeL h1{font-family:'Fraunces',serif;font-weight:650;font-size:clamp(30px,4.5vw,48px);line-height:1.1;margin:10px 0 8px}
+.homeL .sub{color:#C7D3E1;font-size:16px;max-width:640px;margin-bottom:34px}
+.agenda .row{display:flex;gap:16px;padding:13px 0;border-bottom:1px solid #24425F;align-items:baseline}
+.agenda .n{font-family:'Fraunces',serif;font-size:20px;color:var(--brass);min-width:30px;font-weight:650}
+.agenda .d{min-width:150px;color:#9FB3CB;font-size:13px}
+.agenda .t{font-weight:600;font-size:15px;color:#fff}
+.homeL .note{margin-top:auto;padding-top:30px;font-size:13px;color:#9FB3CB;font-style:italic}
+.homeR{flex:1 1 320px;background:var(--card);padding:48px 36px;border-left:1px solid var(--line);display:flex;flex-direction:column;justify-content:center}
+.homeR h2{font-family:'Fraunces',serif;font-size:22px;margin-bottom:6px}
+.homeR .hint{font-size:13px;color:var(--ink2);margin-bottom:20px}
+label{display:block;font-size:12px;font-weight:600;color:var(--ink2);margin:14px 0 6px}
+input[type=email],input[type=text],textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:11px 13px;background:#FCFDFE}
+input:focus,textarea:focus{outline:none;border-color:var(--brass)}
+.btn{width:100%;margin-top:16px;background:var(--ink);color:#fff;border:none;border-radius:10px;padding:12px;font-weight:700}
+.btn.gold{background:var(--brass)}
+.btn.ghost{background:none;border:1.5px solid var(--line);color:var(--ink)}
+.msg{margin-top:12px;font-size:13px;font-weight:600;border-radius:10px;padding:10px 12px;display:none}
+.msg.err{background:#F6E3E1;color:var(--red)} .msg.ok{background:#E4F1E9;color:var(--green)}
+.roleNote{margin-top:22px;font-size:12px;color:var(--ink2)}
+
+/* ---------- SHARED APP CHROME ---------- */
+#app{max-width:1100px;margin:0 auto;padding:0 18px 90px}
+.topbar{position:sticky;top:0;z-index:10;background:var(--ink);color:#fff;margin:0 -18px;padding:12px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.topbar .brand{font-family:'Fraunces',serif;font-weight:650;font-size:17px}
+.topbar .sess{font-size:13px;color:#C7D3E1}
+.topbar .me{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:13px}
+.chipInit{width:32px;height:32px;border-radius:50%;background:var(--brass);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
+.counter{background:#16375C;border-radius:999px;padding:5px 14px;font-size:13px;font-weight:700;color:var(--brassbg)}
+.qwrap{margin-top:26px}
+.qkind{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--brass)}
+.qtitle{font-family:'Fraunces',serif;font-size:clamp(22px,3.4vw,34px);font-weight:650;line-height:1.2;margin:8px 0 6px}
+.qph{font-size:14px;color:var(--ink2);font-style:italic;margin-bottom:18px}
+.timer{font-family:'Fraunces',serif;font-size:20px;font-weight:650;color:var(--red)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:12px}
+.resp{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:13px 15px;margin-bottom:9px}
+.resp .txt{flex:1;font-size:14.5px}
+.resp .init{width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--brassbg);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0}
+.resp .cat{font-size:10.5px;font-weight:700;background:var(--brassbg);color:#8F6F22;border-radius:6px;padding:2px 8px;margin-left:8px}
+.mini{border:1.5px solid var(--line);background:#FCFDFE;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:600;color:var(--ink2)}
+.mini:hover{border-color:var(--brass)}
+.vbtns{display:flex;gap:6px;flex-shrink:0}
+.vbtn{border:1.5px solid var(--line);background:#FCFDFE;border-radius:10px;padding:7px 12px;font-size:15px}
+.vbtn.done{opacity:.45;pointer-events:none}
+.vcount{font-weight:700;font-size:13px;color:var(--ink2);margin-left:4px}
+.spot{position:fixed;inset:0;background:rgba(14,42,71,.96);z-index:50;display:flex;align-items:center;justify-content:center;padding:40px}
+.spot .inner{max-width:900px;color:#fff;font-family:'Fraunces',serif;font-size:clamp(24px,4vw,42px);line-height:1.3;text-align:center}
+.spot .who{margin-top:26px;font-family:'Inter',sans-serif;font-size:15px;color:var(--brass);text-align:center}
+.scaleRow{display:flex;gap:12px;margin:18px 0}
+.scaleRow button{width:62px;height:62px;border-radius:14px;border:1.5px solid var(--line);background:#fff;font-size:22px;font-weight:700;color:var(--ink)}
+.scaleRow button.on{background:var(--brass);border-color:var(--brass);color:#fff}
+.bigavg{font-family:'Fraunces',serif;font-size:56px;font-weight:650;color:var(--brass)}
+.infoCard{background:var(--ink);color:#fff;border-radius:var(--r);padding:34px;font-family:'Fraunces',serif;font-size:clamp(20px,3vw,30px);line-height:1.35}
+
+/* ---------- FACILITATOR ---------- */
+.fbar{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:18px}
+.fbtn{border:none;border-radius:9px;padding:9px 14px;font-size:13px;font-weight:700;background:var(--ink);color:#fff}
+.fbtn.gold{background:var(--brass)} .fbtn.grey{background:#EDF1F6;color:var(--ink)}
+.fbtn.red{background:var(--red)}
+select.fsel{border:1.5px solid var(--line);border-radius:9px;padding:8px 10px;font-size:13px;background:#fff}
+.sortBoard{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;margin-top:14px}
+.sortCol{min-width:230px;background:#EDF1F6;border-radius:12px;padding:10px;flex-shrink:0}
+.sortCol h4{font-size:12.5px;font-weight:700;color:var(--ink2);margin:2px 4px 10px;text-transform:uppercase;letter-spacing:.05em}
+.sortCard{background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:13px;margin-bottom:8px;cursor:grab}
+.sortCard.dragging{opacity:.5}
+@media(max-width:760px){.homeL{padding:34px 24px}.homeR{padding:34px 24px}}
+</style>
+</head>
+<body>
+
+<!-- ================= HOME ================= -->
+<div id="home">
+  <div class="homeL">
+    <div class="logo" id="logoBox"><span class="fallback">BATH SPA · RAK</span></div>
+    <div class="eyebrow" id="hEyebrow">BSU RAK CAMPUS</div>
+    <h1 id="hTitle">Learning &amp; Teaching Symposium</h1>
+    <div class="sub" id="hSub">Five working sessions. No long speeches, no lost ideas: you sit at a computer, we pose the questions, and every comment, idea and vote is typed, documented and analysed. What we write together becomes the campus plan.</div>
+    <div class="agenda" id="agenda"><div style="color:#9FB3CB;font-size:13px">Loading agenda…</div></div>
+    <div class="note">Don't talk much. Type everything. Every voice counts equally here, and every word is kept.</div>
+  </div>
+  <div class="homeR">
+    <div id="loginStep1">
+      <h2>Join the session</h2>
+      <div class="hint">Use your <b id="domainTxt">bathspa.ae</b> email. A one-time code will be sent to you. Your first login each day is your attendance.</div>
+      <label>Email address</label>
+      <input type="email" id="lEmail" placeholder="you@bathspa.ae">
+      <button class="btn" onclick="requestOtp()">Send me the code</button>
+      <div class="roleNote" id="roleNote">Facilitator? Log in with the facilitator email; the console opens automatically.</div>
+    </div>
+    <div id="loginStep2" class="hide">
+      <h2>Check your inbox</h2>
+      <div class="hint">Enter the 6-digit code sent to <b id="sentTo"></b></div>
+      <label>Code</label>
+      <input type="text" id="lCode" inputmode="numeric" maxlength="6" placeholder="123456">
+      <div id="nameWrap" class="hide"><label>Your full name (first time only)</label><input type="text" id="lName" placeholder="Full name"></div>
+      <button class="btn gold" onclick="verifyOtp()">Enter the symposium</button>
+      <button class="btn ghost" onclick="show('loginStep1')">Different email</button>
+    </div>
+    <div class="msg err" id="lErr"></div>
+    <div class="msg ok" id="lOk"></div>
+  </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div id="app" class="hide">
+  <div class="topbar">
+    <span class="brand" id="tBrand">LTS</span>
+    <span class="sess" id="tSess"></span>
+    <span class="counter" id="tCount">0 responses</span>
+    <span class="me"><span id="tName"></span><span class="chipInit" id="tInit"></span></span>
+  </div>
+
+  <!-- facilitator controls -->
+  <div id="fPanel" class="fbar hide">
+    <select class="fsel" id="fSession" onchange="fGoto()"></select>
+    <button class="fbtn grey" onclick="fStep(-1)">◀ Prev</button>
+    <button class="fbtn grey" onclick="fStep(1)">Next ▶</button>
+    <button class="fbtn" onclick="fPhase('open')">Open responses</button>
+    <button class="fbtn red" onclick="fPhase('closed')">Close</button>
+    <button class="fbtn gold" onclick="fPhase('voting')">Start voting</button>
+    <button class="fbtn gold" onclick="fPhase('sorting')">Sort</button>
+    <button class="fbtn grey" onclick="fAiSort()">AI sort</button>
+    <select class="fsel" id="fTimer" onchange="fSetTimer()">
+      <option value="">Timer…</option><option value="3">3 min</option><option value="5">5 min</option><option value="8">8 min</option><option value="10">10 min</option><option value="0">Clear</option>
+    </select>
+    <button class="fbtn grey" onclick="fSpot('')">Spotlight off</button>
+  </div>
+
+  <div class="qwrap">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap">
+      <span class="qkind" id="qKind"></span><span class="timer" id="qTimer"></span>
+    </div>
+    <div class="qtitle" id="qTitle">Waiting for the facilitator…</div>
+    <div class="qph" id="qPh"></div>
+    <div id="stage"></div>
+  </div>
+</div>
+
+<div id="spot" class="spot hide" onclick="if(ME.role==='facilitator')fSpot('')">
+  <div><div class="inner" id="spotTxt"></div><div class="who" id="spotWho"></div></div>
+</div>
+
+<script>
+/* ================= CONFIG ================= */
+const CONFIG = {
+  EXEC_URL: "https://script.google.com/macros/s/AKfycbz90CVMuTRyateHAN_fuze-6kHr2GCNRqx0XDuFSBX_ItvMXv5bKUYC6QD5JFRAU87e/exec",
+  LOGO_URL: "https://drive.google.com/file/d/1isNkX6RAzMkTYkLK2ltDc_jlw1YO_Lx1/view?usp=drive_link"   // paste a public logo image URL when ready; text mark shows until then
+};
+const W = new URLSearchParams(location.search).get("w") || "aug-2026";
+
+/* ================= STATE ================= */
+let ME = JSON.parse(sessionStorage.getItem("lts_me_" + W) || "null");
+let INFO = null, CUR = null, POLL = null, lastKey = "";
+
+async function apiGet(params){ params.w = W; const r = await fetch(CONFIG.EXEC_URL + "?" + new URLSearchParams(params)); return r.json(); }
+async function apiPost(body){ body.w = W; if(ME) body.token = ME.token;
+  const r = await fetch(CONFIG.EXEC_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify(body) }); return r.json(); }
+function el(id){ return document.getElementById(id); }
+function imgUrl(u){
+  if(!u) return "";
+  u = String(u).trim();
+  const m = u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?[^ ]*id=)([\w-]{20,})/) || u.match(/[?&]id=([\w-]{20,})/);
+  if(m) return "https://lh3.googleusercontent.com/d/" + m[1];
+  return u;
+}
+function esc(s){ const d=document.createElement("div"); d.textContent=s==null?"":String(s); return d.innerHTML; }
+function show(id){ el("loginStep1").classList.add("hide"); el("loginStep2").classList.add("hide"); el(id).classList.remove("hide"); }
+function err(m){ el("lErr").textContent=m; el("lErr").style.display=m?"block":"none"; el("lOk").style.display="none"; }
+function okm(m){ el("lOk").textContent=m; el("lOk").style.display="block"; el("lErr").style.display="none"; }
+
+/* ================= HOME ================= */
+async function loadHome(){
+  // logo now comes from the KEY tab (Logo URL), CONFIG.LOGO_URL is only a fallback
+  try{
+    INFO = await apiGet({action:"info"});
+    if(!INFO.ok){ el("agenda").innerHTML = '<div style="color:#E8A9A3">'+esc(INFO.error)+'</div>'; return; }
+    const lg = imgUrl(INFO.logoUrl || CONFIG.LOGO_URL);
+    if(lg) el("logoBox").innerHTML = '<span class="chip"><img src="'+lg+'" alt="Bath Spa University RAK Campus"></span>';
+    el("hTitle").textContent = INFO.title;
+    el("hEyebrow").textContent = "BSU RAK CAMPUS · " + (INFO.edition||"").toUpperCase();
+    el("domainTxt").textContent = INFO.domain;
+    el("roleNote").textContent = INFO.roleWord + "? Log in with the " + INFO.roleWord.toLowerCase() + " email; the console opens automatically.";
+    el("agenda").innerHTML = INFO.sessions.map(s=>`<div class="row"><span class="n">${esc(s["Session No"])}</span><span class="d">${esc(s.Day)} · ${esc(s.Date)} · ${esc(s.Start)}–${esc(s.End)}</span><span class="t">${esc(s.Theme)}</span></div>`).join("");
+    if(ME) enter();
+  }catch(e){ el("agenda").innerHTML = '<div style="color:#E8A9A3">Cannot reach the backend. Check EXEC_URL.</div>'; }
+}
+async function requestOtp(){
+  err("");
+  const email = el("lEmail").value.trim();
+  if(!email){ err("Enter your email."); return; }
+  okm("Sending…");
+  const r = await apiPost({action:"request_otp", email});
+  if(!r.ok){ err(r.error); return; }
+  el("sentTo").textContent = email; okm("Code sent. Check your inbox (and spam).");
+  show("loginStep2");
+}
+async function verifyOtp(){
+  err("");
+  const email = el("lEmail").value.trim(), code = el("lCode").value.trim(), name = el("lName") ? el("lName").value.trim() : "";
+  const r = await apiPost({action:"verify_otp", email, code, name});
+  if(!r.ok){ err(r.error); return; }
+  if(r.needName){ el("nameWrap").classList.remove("hide"); okm("First time here: add your full name, then press Enter the symposium again."); return; }
+  ME = { token:r.token, role:r.role, name:r.name, initials:r.initials };
+  sessionStorage.setItem("lts_me_"+W, JSON.stringify(ME));
+  enter();
+}
+
+/* ================= ENTER APP ================= */
+function enter(){
+  el("home").classList.add("hide"); el("app").classList.remove("hide");
+  el("tBrand").textContent = (INFO&&INFO.title) || "LTS";
+  el("tName").textContent = ME.name + (ME.role==="facilitator" ? " · " + (INFO?INFO.roleWord:"Facilitator") : "");
+  el("tInit").textContent = ME.initials;
+  if(ME.role==="facilitator"){
+    el("fPanel").classList.remove("hide");
+    el("fSession").innerHTML = INFO.sessions.map(s=>`<option value="${esc(s["Session No"])}">Session ${esc(s["Session No"])}: ${esc(s.Theme)}</option>`).join("");
+  }
+  poll(); POLL = setInterval(poll, 3000);
+  setInterval(tickTimer, 1000);
+}
+
+/* ================= POLL & RENDER ================= */
+async function poll(){
+  try{
+    const r = await apiGet({action:"state"});
+    if(!r.ok) return;
+    CUR = r;
+    const st = r.state, q = r.question;
+    if(ME.role==="facilitator") el("fSession").value = st.session;
+    const sess = INFO.sessions.find(s=>Number(s["Session No"])===Number(st.session));
+    el("tSess").textContent = sess ? ("Session "+st.session+" · "+sess.Theme) : "";
+    el("tCount").textContent = (r.count||0) + " responses";
+    // spotlight
+    if(st.spotlight && r.responses){
+      const sr = r.responses.find(x=>x.ID===st.spotlight);
+      if(sr){ el("spotTxt").textContent = "\u201C"+sr.Text+"\u201D"; el("spotWho").textContent = sr.Initials ? "— "+sr.Initials : ""; el("spot").classList.remove("hide"); }
+    } else el("spot").classList.add("hide");
+    // rerender only when something meaningful changed
+    const key = [st.session, st.order, st.phase, r.count, JSON.stringify((r.responses||[]).map(x=>[x.ID,x.Text,x.Up,x.Down,x.Category])), JSON.stringify(r.scale||{})].join("|");
+    if(key===lastKey) return; lastKey = key;
+    render(st, q, r);
+  }catch(e){}
+}
+
+function render(st, q, r){
+  el("qTimer").textContent = "";
+  if(!q){ el("qKind").textContent=""; el("qTitle").textContent="Waiting…"; el("qPh").textContent=""; el("stage").innerHTML=""; return; }
+  const type = String(q.Type||"Info");
+  el("qKind").textContent = "Session "+st.session+" · Q"+st.order+" · "+type + (st.phase!=="idle" ? " · "+st.phase : "");
+  el("qTitle").textContent = q.Content;
+  el("qPh").textContent = q["Placeholder / instruction to teachers"]||"";
+  const stage = el("stage");
+
+  if(type==="Info" || st.phase==="idle"){
+    stage.innerHTML = `<div class="infoCard">${esc(q.Content)}</div>` + (ME.role==="facilitator" && q["Leader notes"] ? `<div class="card" style="margin-top:12px"><b style="font-size:12px;color:#8F6F22">${esc(INFO.roleWord).toUpperCase()} NOTES</b><div style="font-size:13.5px;margin-top:6px">${esc(q["Leader notes"])}</div></div>` : "");
+    return;
+  }
+  if(type==="Scale"){
+    const done = sessionStorage.getItem("lts_scale_"+W+"_"+st.session+"_"+st.order);
+    stage.innerHTML = (st.phase==="open" && !done ? `<div class="scaleRow">${[1,2,3,4,5].map(n=>`<button onclick="sendScale(${n},this)">${n}</button>`).join("")}</div>` : "") +
+      (r.scale ? `<div class="card" style="text-align:center"><div style="font-size:12px;font-weight:700;color:#8F6F22">ROOM AVERAGE · ${r.scale.count} ratings</div><div class="bigavg">${r.scale.avg||"–"}</div></div>` : "");
+    return;
+  }
+  if(st.phase==="sorting" || type==="Sort"){
+    renderSort(q, r); return;
+  }
+  let html = "";
+  if(st.phase==="open" && ME.role!=="facilitator"){
+    html += `<div class="card"><textarea id="rText" rows="3" placeholder="Type your response… submit as many as you like."></textarea>
+      <button class="btn gold" style="margin-top:10px" onclick="sendResp()">Submit response</button></div>`;
+  }
+  const list = (r.responses||[]).slice().reverse();
+  const voting = st.phase==="voting";
+  const mineFirst = ME.role!=="facilitator" && st.phase==="open";
+  html += list
+    .filter(x => !mineFirst || true)
+    .map(x=>{
+      const mine = false; // ownership known server-side; edit shown via initials match
+      const isMine = x.Initials===ME.initials && ME.role!=="facilitator";
+      return `<div class="resp" ${ME.role==="facilitator" ? `onclick="fSpot('${esc(x.ID)}')" style="cursor:pointer" title="Click to spotlight"`:""}>
+        <span class="init">${esc(x.Initials||"·")}</span>
+        <span class="txt">${esc(x.Text)}${x.Category?`<span class="cat">${esc(x.Category)}</span>`:""}</span>
+        ${voting ? `<span class="vbtns">
+            <button class="vbtn ${voted(x.ID)?'done':''}" onclick="event.stopPropagation();sendVote('${esc(x.ID)}',1,this)">👍</button><span class="vcount">${x.Up||0}</span>
+            <button class="vbtn ${voted(x.ID)?'done':''}" onclick="event.stopPropagation();sendVote('${esc(x.ID)}',-1,this)">👎</button><span class="vcount">${x.Down||0}</span>
+          </span>` : ""}
+        ${isMine && st.phase==="open" ? `<span class="vbtns">
+            <button class="mini" onclick="editResp('${esc(x.ID)}', this)">Edit</button>
+            <button class="mini" onclick="delResp('${esc(x.ID)}')">Delete</button></span>` : ""}
+      </div>`;
+    }).join("");
+  if(!list.length && st.phase!=="open") html += `<div class="card" style="text-align:center;color:#33506F">No responses yet.</div>`;
+  stage.innerHTML = html;
+}
+
+function renderSort(q, r){
+  const cols = String(q["Sort columns (semicolon-separated)"]||"Unsorted").split(";").map(c=>c.trim()).filter(String);
+  const groups = {}; cols.forEach(c=>groups[c]=[]); groups["Unsorted"] = groups["Unsorted"]||[];
+  (r.responses||[]).forEach(x=>{ (groups[x.Category] || groups["Unsorted"]).push(x); });
+  const editable = ME.role==="facilitator";
+  el("stage").innerHTML = `<div class="sortBoard">` + Object.keys(groups).map(c=>`
+    <div class="sortCol" data-col="${esc(c)}" ${editable?`ondragover="event.preventDefault()" ondrop="dropCard(event,'${esc(c)}')"`:""}>
+      <h4>${esc(c)} · ${groups[c].length}</h4>
+      ${groups[c].map(x=>`<div class="sortCard" ${editable?`draggable="true" ondragstart="dragCard(event,'${esc(x.ID)}')"`:""}>${esc(x.Text)} ${x.Initials?`<b style="color:#8F6F22">· ${esc(x.Initials)}</b>`:""}</div>`).join("")}
+    </div>`).join("") + `</div>` +
+    (editable ? `<div style="font-size:12.5px;color:#33506F;margin-top:8px">Drag cards between columns. Changes save automatically. AI sort fills the first pass for you.</div>` : "");
+}
+
+/* ================= PARTICIPANT ACTIONS ================= */
+async function sendResp(){
+  const t = el("rText").value.trim(); if(!t) return;
+  el("rText").value = "";
+  const r = await apiPost({action:"respond", text:t});
+  if(!r.ok){ alert(r.error); return; }
+  lastKey=""; poll();
+}
+async function editResp(id, btn){
+  const row = btn.closest(".resp");
+  const cur = row.querySelector(".txt").childNodes[0].textContent;
+  const t = prompt("Edit your response:", cur);
+  if(t===null) return;
+  const r = await apiPost({action:"edit_response", id, text:t});
+  if(!r.ok){ alert(r.error); return; } lastKey=""; poll();
+}
+async function delResp(id){
+  if(!confirm("Delete this response?")) return;
+  const r = await apiPost({action:"delete_response", id});
+  if(!r.ok){ alert(r.error); return; } lastKey=""; poll();
+}
+function voted(id){ return !!sessionStorage.getItem("lts_v_"+W+"_"+id); }
+async function sendVote(id, v, btn){
+  if(voted(id)) return;
+  sessionStorage.setItem("lts_v_"+W+"_"+id, "1");
+  const r = await apiPost({action:"vote", id, vote:v});
+  if(!r.ok && !/Already/.test(r.error)){ sessionStorage.removeItem("lts_v_"+W+"_"+id); alert(r.error); }
+  lastKey=""; poll();
+}
+async function sendScale(n, btn){
+  document.querySelectorAll(".scaleRow button").forEach(b=>b.classList.remove("on")); btn.classList.add("on");
+  sessionStorage.setItem("lts_scale_"+W+"_"+CUR.state.session+"_"+CUR.state.order, "1");
+  const r = await apiPost({action:"scale", value:n});
+  if(!r.ok && !/Already/.test(r.error)) alert(r.error);
+  lastKey=""; poll();
+}
+
+/* ================= FACILITATOR ACTIONS ================= */
+async function fSet(patch){ const r = await apiPost(Object.assign({action:"set_state"}, patch)); if(!r.ok) alert(r.error); lastKey=""; poll(); }
+function fGoto(){ fSet({session:Number(el("fSession").value), order:1, phase:"idle", spotlight:"", timerEnd:0}); }
+function fStep(d){ fSet({order: Math.max(1, Number(CUR.state.order)+d), phase:"idle", spotlight:"", timerEnd:0}); }
+function fPhase(p){ fSet({phase:p, spotlight:""}); }
+function fSpot(id){ fSet({spotlight:id}); }
+function fSetTimer(){
+  const m = el("fTimer").value; el("fTimer").value="";
+  if(m==="") return;
+  fSet({timerEnd: m==="0" ? 0 : Date.now()+Number(m)*60000, phase:"open"});
+}
+async function fAiSort(){
+  const q = CUR.question;
+  const cols = q["Sort columns (semicolon-separated)"] || prompt("Column names, separated by ; :");
+  if(!cols) return;
+  const r = await apiPost({action:"ai_sort", columns:cols, session:CUR.state.session, order:CUR.state.order});
+  if(!r.ok){ alert(r.error); return; }
+  fSet({phase:"sorting"});
+}
+let dragId = null;
+function dragCard(ev, id){ dragId = id; ev.target.classList.add("dragging"); }
+async function dropCard(ev, col){
+  if(!dragId) return;
+  const map = {}; map[dragId] = col; dragId = null;
+  await apiPost({action:"categorize", map});
+  lastKey=""; poll();
+}
+function tickTimer(){
+  if(!CUR || !CUR.state.timerEnd){ el("qTimer").textContent=""; return; }
+  const left = CUR.state.timerEnd - Date.now();
+  if(left<=0){ el("qTimer").textContent="Time"; return; }
+  const m = Math.floor(left/60000), s = Math.floor((left%60000)/1000);
+  el("qTimer").textContent = m+":"+String(s).padStart(2,"0");
+}
+
+loadHome();
+</script>
+</body>
+</html>
