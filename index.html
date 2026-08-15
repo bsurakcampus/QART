@@ -181,6 +181,7 @@ select.fsel{border:1.5px solid var(--line);border-radius:9px;padding:8px 10px;fo
     <button class="fbtn grey" onclick="fRefreshQ()">Refresh questions</button>
   </div>
 
+  <div id="reconnect" class="hide" style="margin-top:40px;text-align:center;color:#33506F;font-size:14px"><div class="chipInit" style="margin:0 auto 12px;width:40px;height:40px;background:#B08A2E">…</div>Reconnecting to the workshop…</div>
   <div class="qwrap">
     <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap">
       <span class="qkind" id="qKind"></span><span class="timer" id="qTimer"></span>
@@ -199,7 +200,7 @@ select.fsel{border:1.5px solid var(--line);border-radius:9px;padding:8px 10px;fo
 /* ================= CONFIG ================= */
 const CONFIG = {
   EXEC_URL: "https://script.google.com/macros/s/AKfycby4NpY11WAHgik38KiboYU0aVQ3JCn0EoMBBLjKEuAgtULS7t3c43SVnCVp2aPrvBaLQw/exec",
-  LOGO_URL: "https://drive.google.com/file/d/1isNkX6RAzMkTYkLK2ltDc_jlw1YO_Lx1/view?usp=drive_link"   // paste a public logo image URL when ready; text mark shows until then
+  LOGO_URL: "https://drive.google.com/file/d/1isNkX6RAzMkTYkLK2ltDc_jlw1YO_Lx1/view?usp=drive_link"   // fallback; KEY > Logo URL overrides
 };
 const W = new URLSearchParams(location.search).get("w") || "";
 
@@ -214,7 +215,7 @@ async function apiPost(body){ body.w = W; if(ME) body.token = ME.token;
   const j = await r.json();
   if(j && !j.ok && /Session expired/i.test(j.error||"") && body.action!=="whoami"){ logout("Your session has expired. Please log in again."); }
   return j; }
-function logout(msg){ localStorage.removeItem(MEKEY); ME=null; if(POLL) clearInterval(POLL); el("app").classList.add("hide"); el("home").classList.remove("hide"); show("loginStep1"); if(msg) err(msg); }
+function logout(msg){ localStorage.removeItem(MEKEY); ME=null; el("reconnect").classList.add("hide"); if(POLL) clearInterval(POLL); el("app").classList.add("hide"); el("home").classList.remove("hide"); show("loginStep1"); if(msg) err(msg); }
 function el(id){ return document.getElementById(id); }
 function setFootnote(text){
   const box = el("qPh"); text = String(text||"");
@@ -237,6 +238,7 @@ function err(m){ el("lErr").textContent=m; el("lErr").style.display=m?"block":"n
 function okm(m){ el("lOk").textContent=m; el("lOk").style.display="block"; el("lErr").style.display="none"; }
 
 /* ================= HOME ================= */
+if(ME){ el("home").classList.add("hide"); el("app").classList.remove("hide"); el("reconnect").classList.remove("hide"); el("tName").textContent = ME.name||""; el("tInit").textContent = ME.initials||""; }
 async function loadHome(){
   // logo now comes from the KEY tab (Logo URL), CONFIG.LOGO_URL is only a fallback
   try{
@@ -254,9 +256,9 @@ async function loadHome(){
     el("agenda").innerHTML = INFO.sessions.map(s=>`<div class="row"><span class="n">${esc(s["Session No"])}</span><span class="d">${esc(s.Day)} · ${esc(s.Date)} · ${esc(s.Start)}–${esc(s.End)}</span><span class="t">${esc(s.Theme)}</span></div>`).join("");
     if(ME){
       const ok = await apiPost({action:"whoami"});
-      if(ok && ok.ok){ enter(); } else { localStorage.removeItem(MEKEY); ME=null; err("Your session has expired. Please log in again."); }
+      if(ok && ok.ok){ enter(); } else { localStorage.removeItem(MEKEY); ME=null; el("reconnect").classList.add("hide"); el("app").classList.add("hide"); el("home").classList.remove("hide"); err("Your session has expired. Please log in again."); }
     }
-  }catch(e){ el("agenda").innerHTML = '<div style="color:#E8A9A3">Cannot reach the backend. Check EXEC_URL.</div>'; }
+  }catch(e){ el("agenda").innerHTML = '<div style="color:#E8A9A3">Cannot reach the backend. Check EXEC_URL.</div>'; if(ME){ el("reconnect").classList.add("hide"); el("app").classList.add("hide"); el("home").classList.remove("hide"); } }
 }
 async function requestOtp(){
   err("");
@@ -285,7 +287,7 @@ async function verifyOtp(){
 
 /* ================= ENTER APP ================= */
 function enter(){
-  el("home").classList.add("hide"); el("app").classList.remove("hide");
+  el("home").classList.add("hide"); el("app").classList.remove("hide"); el("reconnect").classList.add("hide");
   el("tBrand").textContent = (INFO&&INFO.title) || "QART";
   el("tName").textContent = ME.name + (ME.role==="facilitator" ? " · " + (INFO?INFO.roleWord:"Facilitator") : "");
   el("tInit").textContent = ME.initials;
