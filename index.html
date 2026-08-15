@@ -302,10 +302,19 @@ function enter(){
 
 /* ================= POLL & RENDER ================= */
 let inputKey = "";   // tracks which question/phase the typing box belongs to
+let pollSeq = 0, expect = null, expectUntil = 0;   // race guards
+function stateMatches(a, b){ return a && b && Number(a.session)===Number(b.session) && Number(a.order)===Number(b.order) && String(a.phase)===String(b.phase) && String(a.spotlight||"")===String(b.spotlight||""); }
 async function poll(){
+  const seq = ++pollSeq;
   try{
     const r = await apiGet({action:"state", token: ME.token});
+    if(seq !== pollSeq) return;                                  // a newer poll has already been issued
     if(!r.ok) return;
+    if(expect){                                                   // waiting for the server to confirm my last console action
+      if(stateMatches(r.state, expect)) expect = null;
+      else if(Date.now() < expectUntil) return;                   // stale answer, ignore it
+      else expect = null;                                         // gave up waiting; accept server truth
+    }
     CUR = r;
     const st = r.state, q = r.question;
     if(ME.role==="facilitator"){ el("fSession").value = st.session; fillQuestionSelect(); }
@@ -520,13 +529,16 @@ function fJump(){ fSet({order:Number(el("fQuestion").value), phase:"idle", spotl
 async function fSet(patch){
   if(CUR && CUR.state){                                   // show the change instantly
     Object.assign(CUR.state, patch);
+    expect = {session:CUR.state.session, order:CUR.state.order, phase:CUR.state.phase, spotlight:CUR.state.spotlight||""}; expectUntil = Date.now()+6000;
     if(patch.order!==undefined || patch.session!==undefined){
       const nq = QLIST.find(x=>x.s===Number(CUR.state.session) && x.o===Number(CUR.state.order));
       if(nq){ CUR.question = {Session:nq.s, Order:nq.o, Type:nq.t, Content:nq.c, "Placeholder / instruction to teachers": nq.p||"", "Leader notes": nq.n||""}; CUR.responses=[]; CUR.count=0; CUR.roster=[]; }
     }
     lastKey=""; render(CUR.state, CUR.question, CUR);
   }
-  const r = await apiPost(Object.assign({action:"set_state"}, patch)); if(!r.ok) alert(r.error);
+  const r = await apiPost(Object.assign({action:"set_state"}, patch));
+  if(!r.ok){ alert(r.error); expect = null; }
+  else if(r.state){ expect = {session:r.state.session, order:r.state.order, phase:r.state.phase, spotlight:r.state.spotlight||""}; }
   lastKey=""; poll();
 }
 function fGoto(){ fSet({session:Number(el("fSession").value), order:1, phase:"idle", spotlight:"", timerEnd:0}); }
