@@ -193,8 +193,8 @@ select.fsel{border:1.5px solid var(--line);border-radius:9px;padding:8px 10px;fo
 <script>
 /* ================= CONFIG ================= */
 const CONFIG = {
-  EXEC_URL: "https://script.google.com/macros/s/AKfycbxFb5MPXvUKgUhMVVhCC6VHZiKXQvPNgDM_REfeYSHdAGkcT5RwUNmBq38YCQngLVHk/exec",
-  LOGO_URL: "https://drive.google.com/file/d/1isNkX6RAzMkTYkLK2ltDc_jlw1YO_Lx1/view?usp=drive_link"   // paste a public logo image URL when ready; text mark shows until then
+  EXEC_URL: "https://script.google.com/macros/s/AKfycby4NpY11WAHgik38KiboYU0aVQ3JCn0EoMBBLjKEuAgtULS7t3c43SVnCVp2aPrvBaLQw/exec",
+  LOGO_URL: "https://drive.google.com/file/d/1isNkX6RAzMkTYkLK2ltDc_jlw1YO_Lx1/view?usp=sharing"   // paste a public logo image URL when ready; text mark shows until then
 };
 const W = new URLSearchParams(location.search).get("w") || "";
 
@@ -296,7 +296,7 @@ async function poll(){
       const sr = r.responses.find(x=>x.ID===st.spotlight);
       if(sr){ el("spotTxt").textContent = "\u201C"+sr.Text+"\u201D"; el("spotWho").textContent = sr.Initials ? "— "+sr.Initials : ""; el("spot").classList.remove("hide"); }
     } else el("spot").classList.add("hide");
-    const key = [st.session, st.order, st.phase, r.count, JSON.stringify((r.responses||[]).map(x=>[x.ID,x.Text,x.Up,x.Down,x.Category,x.Mine])), JSON.stringify(r.scale||{})].join("|");
+    const key = [st.session, st.order, st.phase, r.count, JSON.stringify((r.responses||[]).map(x=>[x.ID,x.Text,x.Up,x.Down,x.Category,x.Mine])), JSON.stringify(r.scale||{}), (r.roster||[]).length].join("|");
     if(key===lastKey) return; lastKey = key;
     render(st, q, r);
   }catch(e){}
@@ -316,6 +316,19 @@ function render(st, q, r){
   el("qTitle").textContent = q.Content;
   setFootnote(q["Placeholder / instruction to teachers"]||"");
 
+  /* ---- Roster: who is in the room, live ---- */
+  if(type==="Roster"){
+    inputKey = ""; el("qPh").textContent = "";
+    const ro = (r.roster||[]);
+    const chips = ro.map(p=>`<div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:96px"><div class="chipInit" style="width:52px;height:52px;font-size:16px;background:#B08A2E">${esc(p.init)}</div><div style="font-size:12px;color:#E4EBF3;text-align:center;line-height:1.2">${esc(p.name)}</div></div>`).join("");
+    const inner = `<div style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#B08A2E;font-family:Inter,sans-serif;font-weight:700;margin-bottom:8px">In the room</div>
+      <div style="font-family:Fraunces,serif;font-size:clamp(40px,6vw,72px);font-weight:650;color:#fff;line-height:1">${ro.length}</div>
+      <div style="font-family:Inter,sans-serif;font-size:14px;color:#C7D3E1;margin:6px 0 22px">${esc(q.Content)}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;max-width:900px;margin:0 auto">${chips || `<div style="color:#9FB3CB;font-size:14px;font-family:Inter,sans-serif">Waiting for the first login…</div>`}</div>`;
+    if(ME.role==="facilitator") stage.innerHTML = `<div class="slideF" style="min-height:44vh">${inner}</div>`;
+    else stage.innerHTML = `<div class="spot" style="cursor:default"><div>${inner}</div></div>`;
+    return;
+  }
   /* ---- Title and Info: full-screen slide for participants, tall centred panel for facilitator ---- */
   if(type==="Title" || type==="Info"){
     inputKey = "";
@@ -474,7 +487,7 @@ async function fAddNote(){
 }
 async function fAddQuestion(){
   const content = prompt("New question wording (inserted right after the current one):"); if(!content) return;
-  const type = (prompt("Type: Prompt, Dual, Title, Info, Vote or Scale", "Prompt")||"Prompt").trim();
+  const type = (prompt("Type: Prompt, Dual, Title, Info, Roster, Vote or Scale", "Prompt")||"Prompt").trim();
   const placeholder = prompt("Footnote / instruction under the question (optional):", "") || "";
   const r = await apiPost({action:"add_question", content, type, placeholder});
   if(!r.ok){ alert(r.error); return; }
