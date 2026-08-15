@@ -39,6 +39,8 @@ input:focus,textarea:focus{outline:none;border-color:var(--brass)}
 .btn{width:100%;margin-top:16px;background:var(--ink);color:#fff;border:none;border-radius:10px;padding:12px;font-weight:700}
 .btn.gold{background:var(--brass)}
 .btn.ghost{background:none;border:1.5px solid var(--line);color:var(--ink)}
+.btn.busy{opacity:.6;pointer-events:none;background-image:linear-gradient(90deg,transparent 0 40%,rgba(255,255,255,.35) 50%,transparent 60% 100%);background-size:200% 100%;animation:sheen 1s linear infinite}
+@keyframes sheen{from{background-position:200% 0}to{background-position:-200% 0}}
 .msg{margin-top:12px;font-size:13px;font-weight:600;border-radius:10px;padding:10px 12px;display:none}
 .msg.err{background:#F6E3E1;color:var(--red)} .msg.ok{background:#E4F1E9;color:var(--green)}
 .roleNote{margin-top:22px;font-size:12px;color:var(--ink2)}
@@ -129,7 +131,7 @@ select.fsel{border:1.5px solid var(--line);border-radius:9px;padding:8px 10px;fo
       <div class="hint" id="loginHint">Use your <b id="domainTxt">bathspa.ae</b> email. A one-time code will be sent to you. Your first login each day is your attendance.</div>
       <label>Email address</label>
       <input type="email" id="lEmail" placeholder="you@bathspa.ae">
-      <button class="btn" onclick="requestOtp()">Send me the code</button>
+      <button class="btn" id="bSend" onclick="requestOtp()">Send me the code</button>
       <div class="roleNote" id="roleNote">Facilitator? Log in with the facilitator email; the console opens automatically.</div>
     </div>
     <div id="loginStep2" class="hide">
@@ -138,7 +140,7 @@ select.fsel{border:1.5px solid var(--line);border-radius:9px;padding:8px 10px;fo
       <label>Code</label>
       <input type="text" id="lCode" inputmode="numeric" maxlength="6" placeholder="123456">
       <div id="nameWrap" class="hide"><label>Your full name (first time only)</label><input type="text" id="lName" placeholder="Full name"></div>
-      <button class="btn gold" onclick="verifyOtp()">Enter the symposium</button>
+      <button class="btn gold" id="bVerify" onclick="verifyOtp()">Enter Workshop</button>
       <button class="btn ghost" onclick="show('loginStep1')">Different email</button>
     </div>
     <div class="msg err" id="lErr"></div>
@@ -152,15 +154,18 @@ select.fsel{border:1.5px solid var(--line);border-radius:9px;padding:8px 10px;fo
     <span class="brand" id="tBrand">QART</span>
     <span class="sess" id="tSess"></span>
     <span class="counter" id="tCount">0 responses</span>
-    <span class="me"><span id="tName"></span><span class="chipInit" id="tInit"></span></span>
+    <span class="me"><span id="tName"></span><span class="chipInit" id="tInit" title="Account"></span><button class="fbtn grey" style="padding:6px 10px;font-size:12px;margin-left:4px" onclick="if(confirm('Log out of QART on this computer?')) logout()">Log out</button></span>
   </div>
 
   <!-- facilitator controls -->
   <div id="fPanel" class="fbar hide">
-    <select class="fsel" id="fSession" onchange="fGoto()"></select>
-    <select class="fsel" id="fQuestion" onchange="fJump()" style="max-width:440px"></select>
-    <button class="fbtn grey" onclick="fStep(-1)">◀ Prev</button>
-    <button class="fbtn grey" onclick="fStep(1)">Next ▶</button>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%">
+      <select class="fsel" id="fSession" onchange="fGoto()" style="flex:1 1 260px;min-width:200px"></select>
+      <select class="fsel" id="fQuestion" onchange="fJump()" style="flex:2 1 320px;min-width:220px"></select>
+      <span style="display:inline-flex;gap:6px;flex-shrink:0;white-space:nowrap">
+        <button class="fbtn grey" onclick="fStep(-1)">◀ Prev</button><button class="fbtn grey" onclick="fStep(1)">Next ▶</button>
+      </span>
+    </div>
     <button class="fbtn" onclick="fPhase('open')">Open responses</button>
     <button class="fbtn red" onclick="fPhase('closed')">Close responses</button>
     <span style="width:1px;height:26px;background:#DDE3EA;display:inline-block;margin:0 2px"></span>
@@ -194,17 +199,22 @@ select.fsel{border:1.5px solid var(--line);border-radius:9px;padding:8px 10px;fo
 /* ================= CONFIG ================= */
 const CONFIG = {
   EXEC_URL: "https://script.google.com/macros/s/AKfycby4NpY11WAHgik38KiboYU0aVQ3JCn0EoMBBLjKEuAgtULS7t3c43SVnCVp2aPrvBaLQw/exec",
-  LOGO_URL: "https://drive.google.com/file/d/1isNkX6RAzMkTYkLK2ltDc_jlw1YO_Lx1/view?usp=sharing"   // paste a public logo image URL when ready; text mark shows until then
+  LOGO_URL: "https://drive.google.com/file/d/1isNkX6RAzMkTYkLK2ltDc_jlw1YO_Lx1/view?usp=drive_link"   // paste a public logo image URL when ready; text mark shows until then
 };
 const W = new URLSearchParams(location.search).get("w") || "";
 
 /* ================= STATE ================= */
-let ME = JSON.parse(sessionStorage.getItem("qart_me_" + W) || "null");
+const MEKEY = "qart_me_" + (W||"default");
+let ME = JSON.parse(localStorage.getItem(MEKEY) || "null");
 let INFO = null, CUR = null, POLL = null, lastKey = "";
 
 async function apiGet(params){ params.w = W; const r = await fetch(CONFIG.EXEC_URL + "?" + new URLSearchParams(params)); return r.json(); }
 async function apiPost(body){ body.w = W; if(ME) body.token = ME.token;
-  const r = await fetch(CONFIG.EXEC_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify(body) }); return r.json(); }
+  const r = await fetch(CONFIG.EXEC_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify(body) });
+  const j = await r.json();
+  if(j && !j.ok && /Session expired/i.test(j.error||"") && body.action!=="whoami"){ logout("Your session has expired. Please log in again."); }
+  return j; }
+function logout(msg){ localStorage.removeItem(MEKEY); ME=null; if(POLL) clearInterval(POLL); el("app").classList.add("hide"); el("home").classList.remove("hide"); show("loginStep1"); if(msg) err(msg); }
 function el(id){ return document.getElementById(id); }
 function setFootnote(text){
   const box = el("qPh"); text = String(text||"");
@@ -222,6 +232,7 @@ function imgUrl(u){
 }
 function esc(s){ const d=document.createElement("div"); d.textContent=s==null?"":String(s); return d.innerHTML; }
 function show(id){ el("loginStep1").classList.add("hide"); el("loginStep2").classList.add("hide"); el(id).classList.remove("hide"); }
+function busy(id,on,label){ const b=el(id); if(!b) return; if(on){ b.dataset.l=b.textContent; b.textContent=label||"Please wait…"; b.classList.add("busy"); } else { b.textContent=b.dataset.l||b.textContent; b.classList.remove("busy"); } }
 function err(m){ el("lErr").textContent=m; el("lErr").style.display=m?"block":"none"; el("lOk").style.display="none"; }
 function okm(m){ el("lOk").textContent=m; el("lOk").style.display="block"; el("lErr").style.display="none"; }
 
@@ -241,15 +252,19 @@ async function loadHome(){
     if(el("domainTxt")) el("domainTxt").textContent = INFO.domain;
     el("roleNote").textContent = INFO.roleWord + "? Log in with the " + INFO.roleWord.toLowerCase() + " email; the console opens automatically.";
     el("agenda").innerHTML = INFO.sessions.map(s=>`<div class="row"><span class="n">${esc(s["Session No"])}</span><span class="d">${esc(s.Day)} · ${esc(s.Date)} · ${esc(s.Start)}–${esc(s.End)}</span><span class="t">${esc(s.Theme)}</span></div>`).join("");
-    if(ME) enter();
+    if(ME){
+      const ok = await apiPost({action:"whoami"});
+      if(ok && ok.ok){ enter(); } else { localStorage.removeItem(MEKEY); ME=null; err("Your session has expired. Please log in again."); }
+    }
   }catch(e){ el("agenda").innerHTML = '<div style="color:#E8A9A3">Cannot reach the backend. Check EXEC_URL.</div>'; }
 }
 async function requestOtp(){
   err("");
   const email = el("lEmail").value.trim();
   if(!email){ err("Enter your email."); return; }
-  okm("Sending…");
-  const r = await apiPost({action:"request_otp", email});
+  busy("bSend", true, "Sending code…"); okm("Sending…");
+  let r; try{ r = await apiPost({action:"request_otp", email}); } catch(e){ r={ok:false,error:"Network problem. Try again."}; }
+  busy("bSend", false);
   if(!r.ok){ err(r.error); return; }
   el("sentTo").textContent = email; okm("Code sent. Check your inbox (and spam).");
   show("loginStep2");
@@ -257,11 +272,14 @@ async function requestOtp(){
 async function verifyOtp(){
   err("");
   const email = el("lEmail").value.trim(), code = el("lCode").value.trim(), name = el("lName") ? el("lName").value.trim() : "";
-  const r = await apiPost({action:"verify_otp", email, code, name});
+  if(!code){ err("Enter the 6-digit code."); return; }
+  busy("bVerify", true, "Checking code…");
+  let r; try{ r = await apiPost({action:"verify_otp", email, code, name}); } catch(e){ r={ok:false,error:"Network problem. Try again."}; }
+  busy("bVerify", false);
   if(!r.ok){ err(r.error); return; }
-  if(r.needName){ el("nameWrap").classList.remove("hide"); okm("First time here: add your full name, then press Enter the symposium again."); return; }
+  if(r.needName){ el("nameWrap").classList.remove("hide"); okm("First time here: add your full name, then press Enter Workshop again."); return; }
   ME = { token:r.token, role:r.role, name:r.name, initials:r.initials };
-  sessionStorage.setItem("qart_me_"+W, JSON.stringify(ME));
+  localStorage.setItem(MEKEY, JSON.stringify(ME));
   enter();
 }
 
@@ -433,8 +451,10 @@ async function sendResp(side){
   const box = side ? el(side==="S" ? "rTextS" : "rTextU") : el("rText");
   const t = box.value.trim(); if(!t) return;
   box.value = ""; box.focus();
+  const btn = box.nextElementSibling; if(btn){ btn.dataset.l=btn.textContent; btn.textContent="Sending…"; btn.classList.add("busy"); setTimeout(()=>{ btn.textContent=btn.dataset.l; btn.classList.remove("busy"); }, 900); }
+  if(CUR){ CUR.responses = CUR.responses||[]; CUR.responses.push({ID:"tmp"+Date.now(), Text:t, Initials:ME.initials, Mine:true, Side:side||"", Category:"", Up:0, Down:0}); CUR.count=(CUR.count||0)+1; lastKey=""; render(CUR.state, CUR.question, CUR); }
   const r = await apiPost({action:"respond", text:t, side: side||""});
-  if(!r.ok){ alert(r.error); return; }
+  if(!r.ok){ alert(r.error); }
   lastKey=""; poll();
 }
 async function editResp(id, btn){
@@ -495,7 +515,18 @@ async function fAddQuestion(){
 }
 async function fRefreshQ(){ await apiPost({action:"refresh_questions"}); await loadQuestions(); lastKey=""; poll(); }
 function fJump(){ fSet({order:Number(el("fQuestion").value), phase:"idle", spotlight:"", timerEnd:0}); }
-async function fSet(patch){ const r = await apiPost(Object.assign({action:"set_state"}, patch)); if(!r.ok) alert(r.error); lastKey=""; poll(); }
+async function fSet(patch){
+  if(CUR && CUR.state){                                   // show the change instantly
+    Object.assign(CUR.state, patch);
+    if(patch.order!==undefined || patch.session!==undefined){
+      const nq = QLIST.find(x=>x.s===Number(CUR.state.session) && x.o===Number(CUR.state.order));
+      if(nq){ CUR.question = {Session:nq.s, Order:nq.o, Type:nq.t, Content:nq.c, "Placeholder / instruction to teachers": nq.p||"", "Leader notes": nq.n||""}; CUR.responses=[]; CUR.count=0; CUR.roster=[]; }
+    }
+    lastKey=""; render(CUR.state, CUR.question, CUR);
+  }
+  const r = await apiPost(Object.assign({action:"set_state"}, patch)); if(!r.ok) alert(r.error);
+  lastKey=""; poll();
+}
 function fGoto(){ fSet({session:Number(el("fSession").value), order:1, phase:"idle", spotlight:"", timerEnd:0}); }
 function fStep(d){ fSet({order: Math.max(1, Number(CUR.state.order)+d), phase:"idle", spotlight:"", timerEnd:0}); }
 function fPhase(p){ fSet({phase:p, spotlight:""}); }
@@ -529,6 +560,8 @@ function tickTimer(){
   el("qTimer").textContent = m+":"+String(s).padStart(2,"0");
 }
 
+["lCode","lName"].forEach(id=>{ const e=el(id); if(e) e.addEventListener("keydown", ev=>{ if(ev.key==="Enter") verifyOtp(); }); });
+el("lEmail").addEventListener("keydown", ev=>{ if(ev.key==="Enter") requestOtp(); });
 loadHome();
 </script>
 </body>
