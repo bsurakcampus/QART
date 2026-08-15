@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Learning &amp; Teaching Symposium · BSU RAK Campus</title>
+<title>QART · BSU RAK Campus</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -55,20 +55,41 @@ input:focus,textarea:focus{outline:none;border-color:var(--brass)}
 .qkind{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--brass)}
 .qtitle{font-family:'Fraunces',serif;font-size:clamp(22px,3.4vw,34px);font-weight:650;line-height:1.2;margin:8px 0 6px}
 .qph{font-size:14px;color:var(--ink2);font-style:italic;margin-bottom:18px}
+.guide{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 18px}
+.guide span{font-size:12.5px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px 11px;color:var(--ink2)}
+.guide .lbl{background:none;border:none;padding:4px 2px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--brass)}
 .timer{font-family:'Fraunces',serif;font-size:20px;font-weight:650;color:var(--red)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:12px}
 .resp{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:13px 15px;margin-bottom:9px}
 .resp .txt{flex:1;font-size:14.5px}
 .resp .init{width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--brassbg);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0}
+.dual{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.dual .card h4{font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+.dual .stu h4{color:var(--brass)} .dual .uni h4{color:var(--ink)}
+.side{font-size:10px;font-weight:700;border-radius:6px;padding:2px 7px;margin-right:8px;flex-shrink:0;align-self:center}
+.side-S{background:var(--brassbg);color:#8F6F22} .side-U{background:#E3EAF3;color:var(--ink)} .side-N{background:#E4F1E9;color:var(--green)}
+@media(max-width:700px){.dual{grid-template-columns:1fr}}
 .resp .cat{font-size:10.5px;font-weight:700;background:var(--brassbg);color:#8F6F22;border-radius:6px;padding:2px 8px;margin-left:8px}
 .mini{border:1.5px solid var(--line);background:#FCFDFE;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:600;color:var(--ink2)}
 .mini:hover{border-color:var(--brass)}
 .vbtns{display:flex;gap:6px;flex-shrink:0}
 .vbtn{border:1.5px solid var(--line);background:#FCFDFE;border-radius:10px;padding:7px 12px;font-size:15px}
-.vbtn.done{opacity:.45;pointer-events:none}
+.vbtn{color:#7A889A;filter:grayscale(1);opacity:.75}
+.vbtn:hover{border-color:var(--brass);opacity:1;filter:none}
+.vbtn.chosen{background:var(--brass);border-color:var(--brass);color:#fff;filter:none;opacity:1;transform:scale(1.06)}
+.vbtn.chosen:hover{opacity:.85}
+.vbtn.other{opacity:.3}
+.vbtn.other:hover{opacity:1}
 .vcount{font-weight:700;font-size:13px;color:var(--ink2);margin-left:4px}
 .spot{position:fixed;inset:0;background:rgba(14,42,71,.96);z-index:50;display:flex;align-items:center;justify-content:center;padding:40px}
-.spot .inner{max-width:900px;color:#fff;font-family:'Fraunces',serif;font-size:clamp(24px,4vw,42px);line-height:1.3;text-align:center}
+.spot>div{width:100%;max-width:900px;margin:0 auto;text-align:center}
+.spot .inner{color:#fff;font-family:'Fraunces',serif;font-size:clamp(24px,4vw,42px);line-height:1.3;text-align:center}
+.spot .body{color:#E4EBF3;font-family:'Fraunces',serif;font-size:clamp(18px,2.6vw,28px);line-height:1.45;text-align:center;margin-top:18px}
+.slideF{background:var(--ink);color:#fff;border-radius:var(--r);padding:48px 40px;min-height:52vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.slideF .now{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#B08A2E;font-weight:700;margin-bottom:14px}
+.slideF .h{font-family:'Fraunces',serif;font-size:clamp(26px,3.6vw,42px);line-height:1.2;max-width:900px}
+.slideF .b{font-family:'Fraunces',serif;font-size:clamp(17px,2.2vw,26px);line-height:1.45;color:#E4EBF3;max-width:900px;margin-top:16px}
+.slideF .s{font-size:16px;color:#C7D3E1;margin-top:14px;max-width:820px}
 .spot .who{margin-top:26px;font-family:'Inter',sans-serif;font-size:15px;color:var(--brass);text-align:center}
 .scaleRow{display:flex;gap:12px;margin:18px 0}
 .scaleRow button{width:62px;height:62px;border-radius:14px;border:1.5px solid var(--line);background:#fff;font-size:22px;font-weight:700;color:var(--ink)}
@@ -97,8 +118,8 @@ select.fsel{border:1.5px solid var(--line);border-radius:9px;padding:8px 10px;fo
   <div class="homeL">
     <div class="logo" id="logoBox"><span class="fallback">BATH SPA · RAK</span></div>
     <div class="eyebrow" id="hEyebrow">BSU RAK CAMPUS</div>
-    <h1 id="hTitle">Learning &amp; Teaching Symposium</h1>
-    <div class="sub" id="hSub">Five working sessions. No long speeches, no lost ideas: you sit at a computer, we pose the questions, and every comment, idea and vote is typed, documented and analysed. What we write together becomes the campus plan.</div>
+    <h1 id="hTitle">QART</h1>
+    <div class="sub" id="hSub">Four working sessions. No long speeches, no lost ideas: you sit at a computer, we pose the questions, and every comment, idea and vote is typed, documented and analysed. What we write together becomes the campus plan.</div>
     <div class="agenda" id="agenda"><div style="color:#9FB3CB;font-size:13px">Loading agenda…</div></div>
     <div class="note" id="hFooter">Don't talk much. Type everything. Every voice counts equally here, and every word is kept.</div>
   </div>
@@ -128,7 +149,7 @@ select.fsel{border:1.5px solid var(--line);border-radius:9px;padding:8px 10px;fo
 <!-- ================= APP ================= -->
 <div id="app" class="hide">
   <div class="topbar">
-    <span class="brand" id="tBrand">LTS</span>
+    <span class="brand" id="tBrand">QART</span>
     <span class="sess" id="tSess"></span>
     <span class="counter" id="tCount">0 responses</span>
     <span class="me"><span id="tName"></span><span class="chipInit" id="tInit"></span></span>
@@ -137,17 +158,22 @@ select.fsel{border:1.5px solid var(--line);border-radius:9px;padding:8px 10px;fo
   <!-- facilitator controls -->
   <div id="fPanel" class="fbar hide">
     <select class="fsel" id="fSession" onchange="fGoto()"></select>
+    <select class="fsel" id="fQuestion" onchange="fJump()" style="max-width:440px"></select>
     <button class="fbtn grey" onclick="fStep(-1)">◀ Prev</button>
     <button class="fbtn grey" onclick="fStep(1)">Next ▶</button>
     <button class="fbtn" onclick="fPhase('open')">Open responses</button>
-    <button class="fbtn red" onclick="fPhase('closed')">Close</button>
+    <button class="fbtn red" onclick="fPhase('closed')">Close responses</button>
+    <span style="width:1px;height:26px;background:#DDE3EA;display:inline-block;margin:0 2px"></span>
     <button class="fbtn gold" onclick="fPhase('voting')">Start voting</button>
-    <button class="fbtn gold" onclick="fPhase('sorting')">Sort</button>
-    <button class="fbtn grey" onclick="fAiSort()">AI sort</button>
+    <button class="fbtn red" onclick="fPhase('closed')">Close voting</button>
+    <span style="width:1px;height:26px;background:#DDE3EA;display:inline-block;margin:0 2px"></span>
+    <button class="fbtn grey" onclick="fAddNote()">+ Add note</button>
     <select class="fsel" id="fTimer" onchange="fSetTimer()">
-      <option value="">Timer…</option><option value="3">3 min</option><option value="5">5 min</option><option value="8">8 min</option><option value="10">10 min</option><option value="0">Clear</option>
+      <option value="">Timer…</option><option value="3">3 min</option><option value="5">5 min</option><option value="10">10 min</option><option value="15">15 min</option><option value="0">Clear</option>
     </select>
     <button class="fbtn grey" onclick="fSpot('')">Spotlight off</button>
+    <button class="fbtn grey" onclick="fAddQuestion()">+ Add question</button>
+    <button class="fbtn grey" onclick="fRefreshQ()">Refresh questions</button>
   </div>
 
   <div class="qwrap">
@@ -167,19 +193,26 @@ select.fsel{border:1.5px solid var(--line);border-radius:9px;padding:8px 10px;fo
 <script>
 /* ================= CONFIG ================= */
 const CONFIG = {
-  EXEC_URL: "https://script.google.com/macros/s/AKfycbz90CVMuTRyateHAN_fuze-6kHr2GCNRqx0XDuFSBX_ItvMXv5bKUYC6QD5JFRAU87e/exec",
-  LOGO_URL: "https://drive.google.com/file/d/1isNkX6RAzMkTYkLK2ltDc_jlw1YO_Lx1/view?usp=sharing"   // paste a public logo image URL when ready; text mark shows until then
+  EXEC_URL: "https://script.google.com/macros/s/AKfycbxFb5MPXvUKgUhMVVhCC6VHZiKXQvPNgDM_REfeYSHdAGkcT5RwUNmBq38YCQngLVHk/exec",
+  LOGO_URL: "https://drive.google.com/file/d/1isNkX6RAzMkTYkLK2ltDc_jlw1YO_Lx1/view?usp=drive_link"   // paste a public logo image URL when ready; text mark shows until then
 };
-const W = new URLSearchParams(location.search).get("w") || "aug-2026";
+const W = new URLSearchParams(location.search).get("w") || "";
 
 /* ================= STATE ================= */
-let ME = JSON.parse(sessionStorage.getItem("lts_me_" + W) || "null");
+let ME = JSON.parse(sessionStorage.getItem("qart_me_" + W) || "null");
 let INFO = null, CUR = null, POLL = null, lastKey = "";
 
 async function apiGet(params){ params.w = W; const r = await fetch(CONFIG.EXEC_URL + "?" + new URLSearchParams(params)); return r.json(); }
 async function apiPost(body){ body.w = W; if(ME) body.token = ME.token;
   const r = await fetch(CONFIG.EXEC_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify(body) }); return r.json(); }
 function el(id){ return document.getElementById(id); }
+function setFootnote(text){
+  const box = el("qPh"); text = String(text||"");
+  if(text.includes(" · ")){
+    box.style.fontStyle = "normal";
+    box.innerHTML = `<div class="guide"><span class="lbl">Consider</span>${text.split(" · ").map(t=>`<span>${esc(t.trim())}</span>`).join("")}</div>`;
+  } else { box.style.fontStyle = "italic"; box.textContent = text; }
+}
 function imgUrl(u){
   if(!u) return "";
   u = String(u).trim();
@@ -228,122 +261,172 @@ async function verifyOtp(){
   if(!r.ok){ err(r.error); return; }
   if(r.needName){ el("nameWrap").classList.remove("hide"); okm("First time here: add your full name, then press Enter the symposium again."); return; }
   ME = { token:r.token, role:r.role, name:r.name, initials:r.initials };
-  sessionStorage.setItem("lts_me_"+W, JSON.stringify(ME));
+  sessionStorage.setItem("qart_me_"+W, JSON.stringify(ME));
   enter();
 }
 
 /* ================= ENTER APP ================= */
 function enter(){
   el("home").classList.add("hide"); el("app").classList.remove("hide");
-  el("tBrand").textContent = (INFO&&INFO.title) || "LTS";
+  el("tBrand").textContent = (INFO&&INFO.title) || "QART";
   el("tName").textContent = ME.name + (ME.role==="facilitator" ? " · " + (INFO?INFO.roleWord:"Facilitator") : "");
   el("tInit").textContent = ME.initials;
   if(ME.role==="facilitator"){
     el("fPanel").classList.remove("hide");
     el("fSession").innerHTML = INFO.sessions.map(s=>`<option value="${esc(s["Session No"])}">Session ${esc(s["Session No"])}: ${esc(s.Theme)}</option>`).join("");
+    loadQuestions();
   }
-  poll(); POLL = setInterval(poll, 3000);
+  poll(); POLL = setInterval(poll, 2500);
   setInterval(tickTimer, 1000);
 }
 
 /* ================= POLL & RENDER ================= */
+let inputKey = "";   // tracks which question/phase the typing box belongs to
 async function poll(){
   try{
-    const r = await apiGet({action:"state"});
+    const r = await apiGet({action:"state", token: ME.token});
     if(!r.ok) return;
     CUR = r;
     const st = r.state, q = r.question;
-    if(ME.role==="facilitator") el("fSession").value = st.session;
+    if(ME.role==="facilitator"){ el("fSession").value = st.session; fillQuestionSelect(); }
     const sess = INFO.sessions.find(s=>Number(s["Session No"])===Number(st.session));
     el("tSess").textContent = sess ? ("Session "+st.session+" · "+sess.Theme) : "";
     el("tCount").textContent = (r.count||0) + " responses";
-    // spotlight
     if(st.spotlight && r.responses){
       const sr = r.responses.find(x=>x.ID===st.spotlight);
       if(sr){ el("spotTxt").textContent = "\u201C"+sr.Text+"\u201D"; el("spotWho").textContent = sr.Initials ? "— "+sr.Initials : ""; el("spot").classList.remove("hide"); }
     } else el("spot").classList.add("hide");
-    // rerender only when something meaningful changed
-    const key = [st.session, st.order, st.phase, r.count, JSON.stringify((r.responses||[]).map(x=>[x.ID,x.Text,x.Up,x.Down,x.Category])), JSON.stringify(r.scale||{})].join("|");
+    const key = [st.session, st.order, st.phase, r.count, JSON.stringify((r.responses||[]).map(x=>[x.ID,x.Text,x.Up,x.Down,x.Category,x.Mine])), JSON.stringify(r.scale||{})].join("|");
     if(key===lastKey) return; lastKey = key;
     render(st, q, r);
   }catch(e){}
 }
 
+function ensureStageShell(){
+  const stage = el("stage");
+  if(!el("inputArea")){ stage.innerHTML = `<div id="inputArea"></div><div id="listArea"></div>`; }
+}
+
 function render(st, q, r){
   el("qTimer").textContent = "";
-  if(!q){ el("qKind").textContent=""; el("qTitle").textContent="Waiting…"; el("qPh").textContent=""; el("stage").innerHTML=""; return; }
+  const stage = el("stage");
+  if(!q){ el("qKind").textContent=""; el("qTitle").textContent="Waiting…"; el("qPh").textContent=""; stage.innerHTML=""; inputKey=""; return; }
   const type = String(q.Type||"Info");
   el("qKind").textContent = "Session "+st.session+" · Q"+st.order+" · "+type + (st.phase!=="idle" ? " · "+st.phase : "");
   el("qTitle").textContent = q.Content;
-  el("qPh").textContent = q["Placeholder / instruction to teachers"]||"";
-  const stage = el("stage");
+  setFootnote(q["Placeholder / instruction to teachers"]||"");
 
-  if(type==="Info" || st.phase==="idle"){
-    stage.innerHTML = `<div class="infoCard">${esc(q.Content)}</div>` + (ME.role==="facilitator" && q["Leader notes"] ? `<div class="card" style="margin-top:12px"><b style="font-size:12px;color:#8F6F22">${esc(INFO.roleWord).toUpperCase()} NOTES</b><div style="font-size:13.5px;margin-top:6px">${esc(q["Leader notes"])}</div></div>` : "");
+  /* ---- Title and Info: full-screen slide for participants, tall centred panel for facilitator ---- */
+  if(type==="Title" || type==="Info"){
+    inputKey = "";
+    el("qPh").textContent = "";
+    const ph = q["Placeholder / instruction to teachers"] || "";
+    const isTitle = type==="Title";
+    const notes = (ME.role==="facilitator" && q["Leader notes"]) ? `<div class="card" style="margin-top:12px;background:#F3EAD3;border-color:#E6D7AE;font-size:13px"><b style="font-size:11px;color:#8F6F22">${esc(INFO.roleWord).toUpperCase()} NOTES</b> · ${esc(q["Leader notes"])}</div>` : "";
+    if(ME.role==="facilitator"){
+      stage.innerHTML = `<div class="slideF">${isTitle?`<div class="now">Now</div>`:""}<div class="h">${esc(q.Content)}</div>${ph?(isTitle?`<div class="s">${esc(ph)}</div>`:`<div class="b">${esc(ph)}</div>`):""}</div>` + notes;
+    } else {
+      stage.innerHTML = `<div class="spot" style="cursor:default"><div>${isTitle?`<div style="font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#B08A2E;font-family:Inter,sans-serif;font-weight:700;margin-bottom:16px">Now</div>`:""}<div class="inner">${esc(q.Content)}</div>${ph?(isTitle?`<div class="who" style="color:#C7D3E1;font-size:17px">${esc(ph)}</div>`:`<div class="body">${esc(ph)}</div>`):""}</div></div>`;
+    }
     return;
   }
+  /* ---- Scale ---- */
   if(type==="Scale"){
-    const done = sessionStorage.getItem("lts_scale_"+W+"_"+st.session+"_"+st.order);
-    stage.innerHTML = (st.phase==="open" && !done ? `<div class="scaleRow">${[1,2,3,4,5].map(n=>`<button onclick="sendScale(${n},this)">${n}</button>`).join("")}</div>` : "") +
+    inputKey = "";
+    const done = sessionStorage.getItem("qart_scale_"+W+"_"+st.session+"_"+st.order);
+    stage.innerHTML = (st.phase==="open" && !done && ME.role!=="facilitator" ? `<div class="scaleRow">${[1,2,3,4,5].map(n=>`<button onclick="sendScale(${n},this)">${n}</button>`).join("")}</div>` : "") +
       (r.scale ? `<div class="card" style="text-align:center"><div style="font-size:12px;font-weight:700;color:#8F6F22">ROOM AVERAGE · ${r.scale.count} ratings</div><div class="bigavg">${r.scale.avg||"–"}</div></div>` : "");
     return;
   }
+  /* ---- Sort board ---- */
   if(st.phase==="sorting" || type==="Sort"){
+    inputKey = "";
     renderSort(q, r); return;
   }
-  let html = "";
-  if(st.phase==="open" && ME.role!=="facilitator"){
-    html += `<div class="card"><textarea id="rText" rows="3" placeholder="Type your response… submit as many as you like."></textarea>
-      <button class="btn gold" style="margin-top:10px" onclick="sendResp()">Submit response</button></div>`;
+
+  /* ---- Prompt / Vote: persistent input + refreshed list ---- */
+  ensureStageShell();
+  if(ME.role==="facilitator" && q["Leader notes"] && !el("fNote")){
+    el("inputArea").insertAdjacentHTML("beforebegin", `<div id="fNote" class="card" style="background:#F3EAD3;border-color:#E6D7AE;padding:10px 14px;font-size:13px"><b style="font-size:11px;color:#8F6F22">${esc(INFO.roleWord).toUpperCase()} NOTES</b> · ${esc(q["Leader notes"])}</div>`);
   }
-  const list = (r.responses||[]).slice().reverse();
+  const wantInput = (st.phase==="open" && ME.role!=="facilitator" && (type==="Prompt" || type==="Dual"));
+  const thisKey = [st.session, st.order, st.phase, type].join("|");
+  if(thisKey !== inputKey){
+    inputKey = thisKey;
+    const fn = el("fNote"); if(fn) fn.remove();
+    if(ME.role==="facilitator" && q["Leader notes"])
+      el("inputArea").insertAdjacentHTML("beforebegin", `<div id="fNote" class="card" style="background:#F3EAD3;border-color:#E6D7AE;padding:10px 14px;font-size:13px"><b style="font-size:11px;color:#8F6F22">${esc(INFO.roleWord).toUpperCase()} NOTES</b> · ${esc(q["Leader notes"])}</div>`);
+    if(!wantInput) el("inputArea").innerHTML = "";
+    else if(type==="Dual"){
+      el("inputArea").innerHTML = `<div class="dual">
+        <div class="card stu"><h4>Action by the student</h4><textarea id="rTextS" rows="3" placeholder="What must the student do or bring at this stage? One idea per submission."></textarea>
+          <button class="btn gold" style="margin-top:10px" onclick="sendResp('S')">Submit as student action</button></div>
+        <div class="card uni"><h4>Action by the university</h4><textarea id="rTextU" rows="3" placeholder="What must the university provide or do at this stage? One idea per submission."></textarea>
+          <button class="btn" style="margin-top:10px" onclick="sendResp('U')">Submit as university action</button></div></div>`;
+      el("rTextS").addEventListener("keydown", e=>{ if((e.ctrlKey||e.metaKey) && e.key==="Enter") sendResp('S'); });
+      el("rTextU").addEventListener("keydown", e=>{ if((e.ctrlKey||e.metaKey) && e.key==="Enter") sendResp('U'); });
+    } else {
+      el("inputArea").innerHTML = `<div class="card"><textarea id="rText" rows="3" placeholder="Type your response… submit as many as you like. Ctrl+Enter also submits."></textarea>
+         <button class="btn gold" style="margin-top:10px" onclick="sendResp()">Submit response</button></div>`;
+      el("rText").addEventListener("keydown", e=>{ if((e.ctrlKey||e.metaKey) && e.key==="Enter") sendResp(); });
+    }
+  }
+
   const voting = st.phase==="voting";
-  const mineFirst = ME.role!=="facilitator" && st.phase==="open";
-  html += list
-    .filter(x => !mineFirst || true)
-    .map(x=>{
-      const mine = false; // ownership known server-side; edit shown via initials match
-      const isMine = x.Initials===ME.initials && ME.role!=="facilitator";
-      return `<div class="resp" ${ME.role==="facilitator" ? `onclick="fSpot('${esc(x.ID)}')" style="cursor:pointer" title="Click to spotlight"`:""}>
-        <span class="init">${esc(x.Initials||"·")}</span>
-        <span class="txt">${esc(x.Text)}${x.Category?`<span class="cat">${esc(x.Category)}</span>`:""}</span>
-        ${voting ? `<span class="vbtns">
-            <button class="vbtn ${voted(x.ID)?'done':''}" onclick="event.stopPropagation();sendVote('${esc(x.ID)}',1,this)">👍</button><span class="vcount">${x.Up||0}</span>
-            <button class="vbtn ${voted(x.ID)?'done':''}" onclick="event.stopPropagation();sendVote('${esc(x.ID)}',-1,this)">👎</button><span class="vcount">${x.Down||0}</span>
-          </span>` : ""}
-        ${isMine && st.phase==="open" ? `<span class="vbtns">
-            <button class="mini" onclick="editResp('${esc(x.ID)}', this)">Edit</button>
-            <button class="mini" onclick="delResp('${esc(x.ID)}')">Delete</button></span>` : ""}
-      </div>`;
-    }).join("");
-  if(!list.length && st.phase!=="open") html += `<div class="card" style="text-align:center;color:#33506F">No responses yet.</div>`;
-  stage.innerHTML = html;
+  let list = (r.responses||[]).slice().reverse();
+  const anyVotes = list.some(x=>(x.Up||0)+(x.Down||0)>0);
+  const rankNow = (voting && ME.role==="facilitator") || (st.phase==="closed" && anyVotes);
+  if(rankNow) list.sort((a,b)=>((b.Up||0)-(b.Down||0))-((a.Up||0)-(a.Down||0)) || (b.Up||0)-(a.Up||0));
+  if(voting && ME.role!=="facilitator") list = list.filter(x=>!x.Mine && x.Side!=="N");   // never vote on your own, and notes are not voted on
+  let html = "";
+  if(type==="Vote" && !voting) html += `<div class="card" style="color:#33506F;font-size:14px">The responses below are what we will vote on. Voting opens when the facilitator starts it.</div>`;
+  html += list.map(x=>`<div class="resp" ${ME.role==="facilitator" ? `onclick="fSpot('${esc(x.ID)}')" style="cursor:pointer" title="Click to spotlight"`:""}>
+      <span class="init">${esc(x.Initials||"·")}</span>
+      ${x.Side ? `<span class="side side-${esc(x.Side)}">${x.Side==="S"?"Student":x.Side==="U"?"University":"Facilitator note"}</span>` : ""}
+      <span class="txt">${esc(x.Text)}${x.Category?`<span class="cat">${esc(x.Category)}</span>`:""}${x.Mine?` <span class="cat" style="background:#E4F1E9;color:#2E7D4F">you</span>`:""}</span>
+      ${voting ? (()=>{ const vd = voted(x.ID); const cu = vd==="up"?"chosen":vd==="down"?"other":""; const cd = vd==="down"?"chosen":vd==="up"?"other":"";
+        return `<span class="vbtns">
+          <button class="vbtn ${cu}" onclick="event.stopPropagation();sendVote('${esc(x.ID)}',1,this)" aria-label="Agree">👍</button>${ME.role==="facilitator"?`<span class="vcount">${x.Up||0}</span>`:""}
+          <button class="vbtn ${cd}" onclick="event.stopPropagation();sendVote('${esc(x.ID)}',-1,this)" aria-label="Disagree">👎</button>${ME.role==="facilitator"?`<span class="vcount">${x.Down||0}</span>`:""}
+        </span>`; })() : (st.phase==="closed" && anyVotes ? `<span class="vbtns"><span class="vcount">👍 ${x.Up||0}</span><span class="vcount">👎 ${x.Down||0}</span></span>` : "")}
+      ${x.Mine && st.phase==="open" ? `<span class="vbtns">
+          <button class="mini" onclick="editResp('${esc(x.ID)}', this)">Edit</button>
+          <button class="mini" onclick="delResp('${esc(x.ID)}')">Delete</button></span>` : ""}
+    </div>`).join("");
+  if(!list.length){
+    const waitMsg = st.phase==="idle" ? "Responses will appear here once the facilitator opens the question."
+                  : voting ? "Nothing to vote on yet."
+                  : st.phase==="closed" ? "Responses are closed." : "No responses yet. Be the first.";
+    html += `<div style="text-align:center;color:#33506F;font-size:13.5px;padding:34px 0;border:1.5px dashed #DDE3EA;border-radius:14px">${waitMsg}</div>`;
+  }
+  el("listArea").innerHTML = html;
 }
 
 function renderSort(q, r){
-  const cols = String(q["Sort columns (semicolon-separated)"]||"Unsorted").split(";").map(c=>c.trim()).filter(String);
+  const cols = String(q["Sort columns (semicolon-separated)"]||"").split(";").map(c=>c.trim()).filter(String);
   const groups = {}; cols.forEach(c=>groups[c]=[]); groups["Unsorted"] = groups["Unsorted"]||[];
   (r.responses||[]).forEach(x=>{ (groups[x.Category] || groups["Unsorted"]).push(x); });
   const editable = ME.role==="facilitator";
   el("stage").innerHTML = `<div class="sortBoard">` + Object.keys(groups).map(c=>`
     <div class="sortCol" data-col="${esc(c)}" ${editable?`ondragover="event.preventDefault()" ondrop="dropCard(event,'${esc(c)}')"`:""}>
       <h4>${esc(c)} · ${groups[c].length}</h4>
-      ${groups[c].map(x=>`<div class="sortCard" ${editable?`draggable="true" ondragstart="dragCard(event,'${esc(x.ID)}')"`:""}>${esc(x.Text)} ${x.Initials?`<b style="color:#8F6F22">· ${esc(x.Initials)}</b>`:""}</div>`).join("")}
+      ${groups[c].map(x=>`<div class="sortCard" ${editable?`draggable="true" ondragstart="dragCard(event,'${esc(x.ID)}')"`:""}>${x.Side?`<span class="side side-${esc(x.Side)}">${x.Side==="S"?"S":"U"}</span>`:""}${esc(x.Text)} ${x.Initials?`<b style="color:#8F6F22">· ${esc(x.Initials)}</b>`:""}</div>`).join("")}
     </div>`).join("") + `</div>` +
-    (editable ? `<div style="font-size:12.5px;color:#33506F;margin-top:8px">Drag cards between columns. Changes save automatically. AI sort fills the first pass for you.</div>` : "");
+    (editable ? `<div style="font-size:12.5px;color:#33506F;margin-top:8px">Drag cards between columns; every drop saves. <b>AI sort</b> does the first pass into the columns listed for this question.</div>` : "");
 }
 
 /* ================= PARTICIPANT ACTIONS ================= */
-async function sendResp(){
-  const t = el("rText").value.trim(); if(!t) return;
-  el("rText").value = "";
-  const r = await apiPost({action:"respond", text:t});
+async function sendResp(side){
+  const box = side ? el(side==="S" ? "rTextS" : "rTextU") : el("rText");
+  const t = box.value.trim(); if(!t) return;
+  box.value = ""; box.focus();
+  const r = await apiPost({action:"respond", text:t, side: side||""});
   if(!r.ok){ alert(r.error); return; }
   lastKey=""; poll();
 }
 async function editResp(id, btn){
   const row = btn.closest(".resp");
-  const cur = row.querySelector(".txt").childNodes[0].textContent;
+  const cur = row.querySelector(".txt").childNodes[0].textContent.trim();
   const t = prompt("Edit your response:", cur);
   if(t===null) return;
   const r = await apiPost({action:"edit_response", id, text:t});
@@ -354,23 +437,51 @@ async function delResp(id){
   const r = await apiPost({action:"delete_response", id});
   if(!r.ok){ alert(r.error); return; } lastKey=""; poll();
 }
-function voted(id){ return !!sessionStorage.getItem("lts_v_"+W+"_"+id); }
+function voted(id){ return sessionStorage.getItem("qart_v_"+W+"_"+id) || ""; }   // "" | "up" | "down"
 async function sendVote(id, v, btn){
-  if(voted(id)) return;
-  sessionStorage.setItem("lts_v_"+W+"_"+id, "1");
-  const r = await apiPost({action:"vote", id, vote:v});
-  if(!r.ok && !/Already/.test(r.error)){ sessionStorage.removeItem("lts_v_"+W+"_"+id); alert(r.error); }
-  lastKey=""; poll();
+  const key = "qart_v_"+W+"_"+id, cur = voted(id), want = v>0?"up":"down";
+  let send = v;
+  if(cur === want){ sessionStorage.removeItem(key); send = 0; }          // tap again = withdraw
+  else sessionStorage.setItem(key, want);                                 // new vote or switch
+  if(CUR) { lastKey=""; render(CUR.state, CUR.question, CUR); }          // instant feedback
+  const r = await apiPost({action:"vote", id, vote:send});
+  if(!r.ok){ if(cur) sessionStorage.setItem(key, cur); else sessionStorage.removeItem(key); alert(r.error); if(CUR) render(CUR.state, CUR.question, CUR); }
 }
 async function sendScale(n, btn){
   document.querySelectorAll(".scaleRow button").forEach(b=>b.classList.remove("on")); btn.classList.add("on");
-  sessionStorage.setItem("lts_scale_"+W+"_"+CUR.state.session+"_"+CUR.state.order, "1");
+  sessionStorage.setItem("qart_scale_"+W+"_"+CUR.state.session+"_"+CUR.state.order, "1");
   const r = await apiPost({action:"scale", value:n});
   if(!r.ok && !/Already/.test(r.error)) alert(r.error);
   lastKey=""; poll();
 }
 
 /* ================= FACILITATOR ACTIONS ================= */
+let QLIST = [];
+async function loadQuestions(){
+  try{ const r = await apiGet({action:"questions"}); if(r.ok){ QLIST = r.questions; fillQuestionSelect(); } }catch(e){}
+}
+function fillQuestionSelect(){
+  if(!CUR || !QLIST.length) return;
+  const s = Number(CUR.state.session), sel = el("fQuestion");
+  const want = QLIST.filter(q=>q.s===s).map(q=>`<option value="${q.o}">Q${q.o} · ${esc(q.t)} · ${esc(String(q.c).slice(0,70))}${String(q.c).length>70?"…":""}</option>`).join("");
+  if(sel.dataset.s !== String(s) || sel.dataset.n !== String(QLIST.length)){ sel.innerHTML = want; sel.dataset.s = String(s); sel.dataset.n = String(QLIST.length); }
+  sel.value = CUR.state.order;
+}
+async function fAddNote(){
+  const t = prompt("Facilitator note for this question (visible to all, marked as a note, not voted on):"); if(!t || !t.trim()) return;
+  const r = await apiPost({action:"respond", text:t.trim()});
+  if(!r.ok){ alert(r.error); return; } lastKey=""; poll();
+}
+async function fAddQuestion(){
+  const content = prompt("New question wording (inserted right after the current one):"); if(!content) return;
+  const type = (prompt("Type: Prompt, Dual, Title, Info, Vote or Scale", "Prompt")||"Prompt").trim();
+  const placeholder = prompt("Footnote / instruction under the question (optional):", "") || "";
+  const r = await apiPost({action:"add_question", content, type, placeholder});
+  if(!r.ok){ alert(r.error); return; }
+  await loadQuestions(); lastKey=""; poll();
+}
+async function fRefreshQ(){ await apiPost({action:"refresh_questions"}); await loadQuestions(); lastKey=""; poll(); }
+function fJump(){ fSet({order:Number(el("fQuestion").value), phase:"idle", spotlight:"", timerEnd:0}); }
 async function fSet(patch){ const r = await apiPost(Object.assign({action:"set_state"}, patch)); if(!r.ok) alert(r.error); lastKey=""; poll(); }
 function fGoto(){ fSet({session:Number(el("fSession").value), order:1, phase:"idle", spotlight:"", timerEnd:0}); }
 function fStep(d){ fSet({order: Math.max(1, Number(CUR.state.order)+d), phase:"idle", spotlight:"", timerEnd:0}); }
