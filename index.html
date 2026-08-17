@@ -109,6 +109,11 @@ input:focus,textarea:focus{outline:none;border-color:var(--brass)}
 /* ---------- FACILITATOR ---------- */
 .fbar{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:18px}
 .fbtn{border:none;border-radius:9px;padding:9px 14px;font-size:13px;font-weight:700;background:var(--ink);color:#fff}
+@keyframes qpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.045)}}
+.fbtn.nextstep{animation:qpulse 1.6s ease-in-out infinite;outline:2px solid var(--brass);outline-offset:3px}
+.fbtn.dim{opacity:.42}
+.fbtn.statechip{background:#E4F1E9!important;color:var(--green)!important;border:1px solid #BEDECC;cursor:default;animation:none;outline:none}
+.livedot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:6px;vertical-align:1px}
 .fbtn.gold{background:var(--brass)} .fbtn.grey{background:#EDF1F6;color:var(--ink)}
 .fbtn.red{background:var(--red)}
 select.fsel{border:1.5px solid var(--line);border-radius:9px;padding:8px 10px;font-size:13px;background:#fff}
@@ -170,14 +175,14 @@ select.fsel{border:1.5px solid var(--line);border-radius:9px;padding:8px 10px;fo
       <select class="fsel" id="fSession" onchange="fGoto()" style="flex:1 1 260px;min-width:200px"></select>
       <select class="fsel" id="fQuestion" onchange="fJump()" style="flex:2 1 320px;min-width:220px"></select>
       <span style="display:inline-flex;gap:6px;flex-shrink:0;white-space:nowrap">
-        <button class="fbtn grey" onclick="fStep(-1)">◀ Prev</button><button class="fbtn grey" onclick="fStep(1)">Next ▶</button>
+        <button class="fbtn grey" onclick="fStep(-1)">◀ Prev</button><button class="fbtn grey" id="bNext" onclick="fStep(1)">Next ▶</button>
       </span>
     </div>
-    <button class="fbtn" onclick="fPhase('open')">Open responses</button>
-    <button class="fbtn red" onclick="fPhase('closed')">Close responses</button>
+    <button class="fbtn" id="bOpen" onclick="fPhase('open')">Open responses</button>
+    <button class="fbtn red" id="bClose" onclick="fPhase('closed')">Close responses</button>
     <span style="width:1px;height:26px;background:#DDE3EA;display:inline-block;margin:0 2px"></span>
-    <button class="fbtn gold" onclick="fPhase('voting')">Start voting</button>
-    <button class="fbtn red" onclick="fPhase('closed')">Close voting</button>
+    <button class="fbtn gold" id="bVote" onclick="fPhase('voting')">Start voting</button>
+    <button class="fbtn red" id="bVoteClose" onclick="fPhase('closed')">Close voting</button>
     <span style="width:1px;height:26px;background:#DDE3EA;display:inline-block;margin:0 2px"></span>
     <button class="fbtn grey" onclick="fAddNote()">+ Add note</button>
     <select class="fsel" id="fTimer" onchange="fSetTimer()">
@@ -363,6 +368,7 @@ function ensureStageShell(){
 }
 
 function render(st, q, r){
+  try{ consoleState(st, q, r); }catch(e){}
   const focusId = document.activeElement && ["rText","rTextS","rTextU"].includes(document.activeElement.id) ? document.activeElement.id : null;
   const focusPos = focusId ? document.activeElement.selectionStart : 0;
   el("qTimer").textContent = "";
@@ -549,6 +555,37 @@ async function sendScale(n, btn){
   lastKey=""; poll();
 }
 
+function consoleState(st, q, r){
+  if(ME.role!=="facilitator") return;
+  const ids = ["bOpen","bClose","bVote","bVoteClose"];
+  const B = {}; ids.forEach(i=>B[i]=el(i)); if(!B.bOpen) return;
+  ids.forEach(i=>{ const b=B[i]; b.classList.remove("nextstep","dim","statechip"); b.disabled=false;
+    b.innerHTML = b.dataset.l || (b.dataset.l = b.textContent); });
+  const nx = el("bNext"); if(nx) nx.classList.remove("nextstep");
+  const type = q ? q.Type : "";
+  const talky = ["Title","Info","Roster"].includes(type);
+  const n = (r && r.count) || 0;
+  const votes = (r && r.responses) ? r.responses.reduce((a,x)=>a+(x.Up||0)+(x.Down||0),0) : 0;
+  if(talky){ ids.forEach(i=>B[i].classList.add("dim")); if(nx) nx.classList.add("nextstep"); return; }
+  const ph = st.phase;
+  if(ph==="idle"){
+    B.bOpen.classList.add("nextstep");
+    ["bClose","bVote","bVoteClose"].forEach(i=>B[i].classList.add("dim"));
+  } else if(ph==="open"){
+    B.bOpen.classList.add("statechip"); B.bOpen.innerHTML = `<span class="livedot"></span>Responses open · ${n}`;
+    B.bClose.classList.add("nextstep");
+    ["bVote","bVoteClose"].forEach(i=>B[i].classList.add("dim"));
+  } else if(ph==="closed"){
+    B.bClose.classList.add("statechip"); B.bClose.innerHTML = `Responses closed · ${n}`;
+    B.bOpen.classList.add("dim"); B.bVoteClose.classList.add("dim");
+    if(votes>0){ B.bVote.classList.add("dim"); if(nx) nx.classList.add("nextstep"); }
+    else B.bVote.classList.add("nextstep");
+  } else if(ph==="voting"){
+    B.bVote.classList.add("statechip"); B.bVote.innerHTML = `<span class="livedot"></span>Voting open · ${votes} vote${votes===1?"":"s"}`;
+    B.bVoteClose.classList.add("nextstep");
+    ["bOpen","bClose"].forEach(i=>B[i].classList.add("dim"));
+  }
+}
 /* ================= FACILITATOR ACTIONS ================= */
 let QLIST = [];
 async function loadQuestions(){
