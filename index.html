@@ -307,6 +307,13 @@ function enter(){
 
 /* ================= POLL & RENDER ================= */
 let inputKey = "";   // tracks which question/phase the typing box belongs to
+const DRAFTS = {};   // unsent text per question+box, survives any re-render
+function draftKey(box){ return CUR ? (CUR.state.session+"|"+CUR.state.order+"|"+box) : ""; }
+function wireDraft(id, box){
+  const e = el(id); if(!e) return;
+  e.value = DRAFTS[draftKey(box)] || "";
+  e.addEventListener("input", ()=>{ DRAFTS[draftKey(box)] = e.value; });
+}
 let pollSeq = 0, expect = null, expectUntil = 0;   // race guards
 function stateMatches(a, b){ return a && b && Number(a.session)===Number(b.session) && Number(a.order)===Number(b.order) && String(a.phase)===String(b.phase) && String(a.spotlight||"")===String(b.spotlight||""); }
 async function poll(){
@@ -342,6 +349,8 @@ function ensureStageShell(){
 }
 
 function render(st, q, r){
+  const focusId = document.activeElement && ["rText","rTextS","rTextU"].includes(document.activeElement.id) ? document.activeElement.id : null;
+  const focusPos = focusId ? document.activeElement.selectionStart : 0;
   el("qTimer").textContent = "";
   const stage = el("stage");
   if(!q){ el("qKind").textContent=""; el("qTitle").textContent="Waiting…"; el("qPh").textContent=""; stage.innerHTML=""; inputKey=""; return; }
@@ -413,10 +422,12 @@ function render(st, q, r){
           <button class="btn" style="margin-top:10px" onclick="sendResp('U')">Submit</button></div></div>`;
       el("rTextS").addEventListener("keydown", e=>{ if((e.ctrlKey||e.metaKey) && e.key==="Enter") sendResp('S'); });
       el("rTextU").addEventListener("keydown", e=>{ if((e.ctrlKey||e.metaKey) && e.key==="Enter") sendResp('U'); });
+      wireDraft("rTextS","S"); wireDraft("rTextU","U");
     } else {
       el("inputArea").innerHTML = `<div class="card"><textarea id="rText" rows="3" placeholder="Type your response… submit as many as you like. Ctrl+Enter also submits."></textarea>
          <button class="btn gold" style="margin-top:10px" onclick="sendResp()">Submit response</button></div>`;
       el("rText").addEventListener("keydown", e=>{ if((e.ctrlKey||e.metaKey) && e.key==="Enter") sendResp(); });
+      wireDraft("rText","P");
     }
   }
 
@@ -448,6 +459,8 @@ function render(st, q, r){
     html += `<div style="text-align:center;color:#33506F;font-size:13.5px;padding:34px 0;border:1.5px dashed #DDE3EA;border-radius:14px">${waitMsg}</div>`;
   }
   el("listArea").innerHTML = html;
+  ["rText","rTextS","rTextU"].forEach(id=>{ const e=el(id); if(e && !e.value){ const box=id==="rText"?"P":id==="rTextS"?"S":"U"; e.value = DRAFTS[draftKey(box)]||""; } });
+  if(focusId){ const e=el(focusId); if(e){ e.focus(); try{ e.setSelectionRange(focusPos, focusPos); }catch(_){}} }
 }
 
 function renderSort(q, r){
@@ -467,7 +480,7 @@ function renderSort(q, r){
 async function sendResp(side){
   const box = side ? el(side==="S" ? "rTextS" : "rTextU") : el("rText");
   const t = box.value.trim(); if(!t) return;
-  box.value = ""; box.focus();
+  box.value = ""; DRAFTS[draftKey(side?side:"P")] = ""; box.focus();
   const btn = box.nextElementSibling; if(btn){ btn.dataset.l=btn.textContent; btn.textContent="Sending…"; btn.classList.add("busy"); setTimeout(()=>{ btn.textContent=btn.dataset.l; btn.classList.remove("busy"); }, 900); }
   if(CUR){ CUR.responses = CUR.responses||[]; CUR.responses.push({ID:"tmp"+Date.now(), Text:t, Initials:ME.initials, Mine:true, Side:side||"", Category:"", Up:0, Down:0}); CUR.count=(CUR.count||0)+1; lastKey=""; render(CUR.state, CUR.question, CUR); }
   const r = await apiPost({action:"respond", text:t, side: side||""});
