@@ -217,6 +217,11 @@ async function apiPost(body){ body.w = W; if(ME) body.token = ME.token;
   return j; }
 function logout(msg){ localStorage.removeItem(MEKEY); ME=null; el("reconnect").classList.add("hide"); if(POLL) clearInterval(POLL); el("app").classList.add("hide"); el("home").classList.remove("hide"); show("loginStep1"); if(msg) err(msg); }
 function el(id){ return document.getElementById(id); }
+function dualLabels(q){
+  const raw = String(q["Sort columns (semicolon-separated)"]||"").trim();
+  if(raw){ const parts = raw.split(/[|;]/).map(s=>s.trim()).filter(Boolean); if(parts.length>=2) return [parts[0], parts[1]]; }
+  return ["Action by the student","Action by the university"];
+}
 function setFootnote(text){
   const box = el("qPh"); text = String(text||"");
   if(text.includes(" · ")){
@@ -400,11 +405,12 @@ function render(st, q, r){
       el("inputArea").insertAdjacentHTML("beforebegin", `<div id="fNote" class="card" style="background:#F3EAD3;border-color:#E6D7AE;padding:10px 14px;font-size:13px"><b style="font-size:11px;color:#8F6F22">${esc(INFO.roleWord).toUpperCase()} NOTES</b> · ${esc(q["Leader notes"])}</div>`);
     if(!wantInput) el("inputArea").innerHTML = "";
     else if(type==="Dual"){
+      const [L,R] = dualLabels(q);
       el("inputArea").innerHTML = `<div class="dual">
-        <div class="card stu"><h4>Action by the student</h4><textarea id="rTextS" rows="3" placeholder="What must the student do or bring at this stage? One idea per submission."></textarea>
-          <button class="btn gold" style="margin-top:10px" onclick="sendResp('S')">Submit as student action</button></div>
-        <div class="card uni"><h4>Action by the university</h4><textarea id="rTextU" rows="3" placeholder="What must the university provide or do at this stage? One idea per submission."></textarea>
-          <button class="btn" style="margin-top:10px" onclick="sendResp('U')">Submit as university action</button></div></div>`;
+        <div class="card stu"><h4>${esc(L)}</h4><textarea id="rTextS" rows="3" placeholder="One idea per submission, as many as you like."></textarea>
+          <button class="btn gold" style="margin-top:10px" onclick="sendResp('S')">Submit</button></div>
+        <div class="card uni"><h4>${esc(R)}</h4><textarea id="rTextU" rows="3" placeholder="One idea per submission, as many as you like."></textarea>
+          <button class="btn" style="margin-top:10px" onclick="sendResp('U')">Submit</button></div></div>`;
       el("rTextS").addEventListener("keydown", e=>{ if((e.ctrlKey||e.metaKey) && e.key==="Enter") sendResp('S'); });
       el("rTextU").addEventListener("keydown", e=>{ if((e.ctrlKey||e.metaKey) && e.key==="Enter") sendResp('U'); });
     } else {
@@ -424,7 +430,7 @@ function render(st, q, r){
   if(type==="Vote" && !voting) html += `<div class="card" style="color:#33506F;font-size:14px">The responses below are what we will vote on. Voting opens when the facilitator starts it.</div>`;
   html += list.map(x=>`<div class="resp" ${ME.role==="facilitator" ? `onclick="fSpot('${esc(x.ID)}')" style="cursor:pointer" title="Click to spotlight"`:""}>
       <span class="init">${esc(x.Initials||"·")}</span>
-      ${x.Side ? `<span class="side side-${esc(x.Side)}">${x.Side==="S"?"Student":x.Side==="U"?"University":"Facilitator note"}</span>` : ""}
+      ${x.Side ? (()=>{ const [L,R]= type==="Dual"?dualLabels(q):["Student","University"]; return `<span class="side side-${esc(x.Side)}">${x.Side==="S"?esc(L):x.Side==="U"?esc(R):"Facilitator note"}</span>`; })() : ""}
       <span class="txt">${esc(x.Text)}${x.Category?`<span class="cat">${esc(x.Category)}</span>`:""}${x.Mine?` <span class="cat" style="background:#E4F1E9;color:#2E7D4F">you</span>`:""}</span>
       ${voting ? (()=>{ const vd = voted(x.ID); const cu = vd==="up"?"chosen":vd==="down"?"other":""; const cd = vd==="down"?"chosen":vd==="up"?"other":"";
         return `<span class="vbtns">
@@ -532,7 +538,7 @@ async function fSet(patch){
     expect = {session:CUR.state.session, order:CUR.state.order, phase:CUR.state.phase, spotlight:CUR.state.spotlight||""}; expectUntil = Date.now()+6000;
     if(patch.order!==undefined || patch.session!==undefined){
       const nq = QLIST.find(x=>x.s===Number(CUR.state.session) && x.o===Number(CUR.state.order));
-      if(nq){ CUR.question = {Session:nq.s, Order:nq.o, Type:nq.t, Content:nq.c, "Placeholder / instruction to teachers": nq.p||"", "Leader notes": nq.n||""}; CUR.responses=[]; CUR.count=0; CUR.roster=[]; }
+      if(nq){ CUR.question = {Session:nq.s, Order:nq.o, Type:nq.t, Content:nq.c, "Placeholder / instruction to teachers": nq.p||"", "Leader notes": nq.n||"", "Sort columns (semicolon-separated)": nq.k||""}; CUR.responses=[]; CUR.count=0; CUR.roster=[]; }
     }
     lastKey=""; render(CUR.state, CUR.question, CUR);
   }
