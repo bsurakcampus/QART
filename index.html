@@ -452,8 +452,12 @@ function render(st, q, r){
           <button class="mini" onclick="editResp('${esc(x.ID)}', this)">Edit</button>
           <button class="mini" onclick="delResp('${esc(x.ID)}')">Delete</button></span>` : ""}
     </div>`).join("");
-  if(!list.length){
-    const waitMsg = st.phase==="idle" ? "Responses will appear here once the facilitator opens the question."
+  if(st.phase==="idle" && ME.role!=="facilitator"){
+    html = `<div style="text-align:center;color:#33506F;font-size:13.5px;padding:34px 0;border:1.5px dashed #DDE3EA;border-radius:14px">Responses will appear here once the facilitator opens the question.</div>`;
+  } else if(st.phase==="idle" && ME.role==="facilitator" && list.length){
+    html = `<div style="font-size:12px;color:#33506F;margin:2px 0 10px">${list.length} response${list.length===1?"":"s"} so far · question not open</div>` + html;
+  } else if(!list.length){
+    const waitMsg = st.phase==="idle" ? "No responses yet. Press Open responses to start."
                   : voting ? "Nothing to vote on yet."
                   : st.phase==="closed" ? "Responses are closed." : "No responses yet. Be the first.";
     html += `<div style="text-align:center;color:#33506F;font-size:13.5px;padding:34px 0;border:1.5px dashed #DDE3EA;border-radius:14px">${waitMsg}</div>`;
