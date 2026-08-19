@@ -225,7 +225,10 @@ async function apiGet(params){ params.w = W; const r = await fetch(CONFIG.EXEC_U
 async function apiPost(body){ body.w = W; if(ME) body.token = ME.token;
   const r = await fetch(CONFIG.EXEC_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify(body) });
   const j = await r.json();
-  if(j && !j.ok && /Session expired/i.test(j.error||"") && body.action!=="whoami"){ logout("Your session has expired. Please log in again."); }
+  if(j && !j.ok && /Session expired/i.test(j.error||"") && body.action!=="whoami"){
+    const again = await fetch(CONFIG.EXEC_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify(Object.assign({}, body, {action:"whoami"})) }).then(x=>x.json()).catch(()=>null);
+    if(!(again && again.ok)) logout("Your session has expired. Please log in again.");
+  }
   return j; }
 function logout(msg){ localStorage.removeItem(MEKEY); ME=null; el("reconnect").classList.add("hide"); if(POLL) clearInterval(POLL); el("app").classList.add("hide"); el("home").classList.remove("hide"); show("loginStep1"); if(msg) err(msg); }
 function el(id){ return document.getElementById(id); }
@@ -320,7 +323,7 @@ function enter(){
     el("fSession").innerHTML = INFO.sessions.map(s=>`<option value="${esc(s["Session No"])}">Session ${esc(s["Session No"])}: ${esc(s.Theme)}</option>`).join("");
     loadQuestions();
   }
-  poll(); POLL = setInterval(poll, 2500);
+  poll(); POLL = setInterval(poll, 2500); pollMs = 2500;
   setInterval(tickTimer, 1000);
 }
 
@@ -333,20 +336,27 @@ function wireDraft(id, box){
   e.value = DRAFTS[draftKey(box)] || "";
   e.addEventListener("input", ()=>{ DRAFTS[draftKey(box)] = e.value; });
 }
-let pollSeq = 0, expect = null, expectUntil = 0;   // race guards
+let pollSeq = 0, expect = null, expectUntil = 0, pollMs = 2500, pollFails = 0;   // race guards
+function retimePoll(){
+  const st = CUR && CUR.state ? CUR.state : null;
+  const active = st && (st.phase==="open" || st.phase==="voting");
+  const want = ME.role==="facilitator" ? (active ? 2500 : 4000) : (active ? 3000 : 6000);
+  if(want !== pollMs){ pollMs = want; if(POLL) clearInterval(POLL); POLL = setInterval(poll, pollMs); }
+}
 function stateMatches(a, b){ return a && b && Number(a.session)===Number(b.session) && Number(a.order)===Number(b.order) && String(a.phase)===String(b.phase) && String(a.spotlight||"")===String(b.spotlight||""); }
 async function poll(){
   const seq = ++pollSeq;
   try{
-    const r = await apiGet({action:"state", token: ME.token});
+    const r = await apiGet({action:"state", token: ME.token, rev: (CUR && CUR.state && CUR.state.rev !== undefined) ? CUR.state.rev : ""});
     if(seq !== pollSeq) return;                                  // a newer poll has already been issued
     if(!r.ok) return;
+    if(r.nc){ pollFails = 0; retimePoll(); return; }             // nothing changed: cheapest possible answer
     if(expect){                                                   // waiting for the server to confirm my last console action
       if(stateMatches(r.state, expect)) expect = null;
       else if(Date.now() < expectUntil) return;                   // stale answer, ignore it
       else expect = null;                                         // gave up waiting; accept server truth
     }
-    CUR = r;
+    CUR = r; pollFails = 0; retimePoll();
     const st = r.state, q = r.question;
     if(ME.role==="facilitator"){ el("fSession").value = st.session; fillQuestionSelect(); }
     const sess = INFO.sessions.find(s=>Number(s["Session No"])===Number(st.session));
@@ -359,7 +369,7 @@ async function poll(){
     const key = [st.session, st.order, st.phase, r.count, JSON.stringify((r.responses||[]).map(x=>[x.ID,x.Text,x.Up,x.Down,x.Category,x.Mine])), JSON.stringify(r.scale||{}), (r.roster||[]).length].join("|");
     if(key===lastKey) return; lastKey = key;
     render(st, q, r);
-  }catch(e){}
+  }catch(e){ pollFails++; if(pollFails>3) retimePoll(); }
 }
 
 function ensureStageShell(){
